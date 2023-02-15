@@ -1,0 +1,43 @@
+import pandas as pd
+import os.path
+
+configfile: "../config/config.yaml"
+
+# Variables --------------------------------------------------------------------
+
+pd.set_option('display.max_colwidth', None)
+samplesheet = pd.read_csv(config["samplesheet"], sep="\t")
+sampledict = {}
+basenames = []
+basenames_n_dir = []
+for sample in samplesheet["name"]:
+    path = samplesheet[samplesheet["name"] == sample]["path"]
+    path_fmt = path.to_string(index=False)
+    sampledict[sample] = path_fmt
+    
+    basepath = os.path.split(os.path.split(path_fmt)[0])[0]
+    sample_dir = os.path.split(os.path.split(path_fmt)[0])[1]
+    filename = os.path.basename(path_fmt)
+    basenames.append(filename.replace(".fastq.gz", ""))
+    name = os.path.join(sample_dir, filename).replace(".fastq.gz", "")
+    basenames_n_dir.append(name)
+
+
+trim_outdir = os.path.join(config["results"] + "trimming")
+
+# ------------------------------------------------------------------------------
+
+include: "rules/trim_small.smk"
+include: "rules/mapping_genome.smk"
+include: "rules/mapping_genome.smk"
+
+rule all:
+    input:
+        # get_trim_output(sampledict, config["results"])
+        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = basenames),
+        expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = basenames),
+        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames)
+
+
+
+
