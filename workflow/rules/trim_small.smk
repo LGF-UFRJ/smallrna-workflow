@@ -7,6 +7,8 @@ rule link_inputs:
         outfiles = expand(os.path.join(trim_outdir, "file_links", "{filename}.fastq.gz"), filename = basenames)
     params:
         outdir = os.path.join(trim_outdir, "file_links/")
+    log:
+        os.path.join(trim_outdir, "log", "link_inputs.log")
     shell:
         "ln -s {input} {params.outdir}"
 
@@ -17,9 +19,9 @@ rule trim_small:
     output:
         os.path.join(trim_outdir, "{filename}_trimmed.fq.gz")
     log:
-        os.path.join(trim_outdir, "log", "{filename}.log.txt")
+        os.path.join(trim_outdir, "log", "{filename}.trim_small.log")
     params:
         f"--fastqc --length 18 --max_length 35 -o {trim_outdir}"
     shell:
-        "trim_galore {params} {input} &> {log}"
+        "trim_galore {params} {input}"
 

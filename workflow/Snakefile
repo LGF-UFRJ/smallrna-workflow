@@ -23,20 +23,32 @@ for sample in samplesheet["name"]:
     basenames_n_dir.append(name)
 
 
-trim_outdir = os.path.join(config["results"] + "trimming")
+trim_outdir = os.path.join(config["results"] + "trimming/")
+map_out_dir = os.path.join(config["results"], "mapping/")
+deeptools_dir = os.path.join(config["results"], "deeptools/")
+multiqc_dir = os.path.join(config["results"], "multiQC/")
+
 
 # ------------------------------------------------------------------------------
 
 include: "rules/trim_small.smk"
-include: "rules/mapping_genome.smk"
-include: "rules/mapping_genome.smk"
+include: "rules/mapping.smk"
+include: "rules/deeptools.smk"
+include: "rules/multiQC.smk"
 
 rule all:
     input:
         # get_trim_output(sampledict, config["results"])
         expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = basenames),
         expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = basenames),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames)
+        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames),
+        expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
+        os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
+        os.path.join(deeptools_dir, "plotCorrelation.png"), 
+        os.path.join(deeptools_dir, "plotPCA.png"),
+        os.path.join(multiqc_dir, "multiqc_report.html")
+
+        # expand(os.path.join(map_out_dir, "{sample}.markdup.bam"), sample = basenames)
 
 
 

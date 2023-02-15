@@ -1,3 +1,6 @@
+results: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/"
+
+samplesheet: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/config/samplesheet.tsv"
 
 genome: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta"
 genome_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta.fai"
@@ -5,7 +8,5 @@ genome_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resourc
 bowtie_genome: "rhodnius_genome"
 bowtie_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_hic/rhodnius_hic"
 
-samplesheet: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/config/samplesheet.tsv"
-
-results: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/"
+annotations: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/annotation/converting_anntations/VectorBase-61_RprolixusCDC_AnnotatedTranscripts.hic.saf"
 
