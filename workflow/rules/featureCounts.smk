@@ -17,14 +17,15 @@ rule featureCounts:
         saf = os.path.join(featureCount_dir, "annotations", saf_name),
         bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = basenames)
     output:
-        os.path.join(featureCount_dir, "featureCounts.counts.tsv")
+        counts = os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
+        outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam"), sample = basenames)
     log:
         os.path.join(featureCount_dir, "log", "featureCounts.log")
     threads: 6
     params:
-        " -F SAF -M -O -R CORE --fraction"
+        " -F SAF -M -O -R BAM --fraction"
     shell:
-        "featureCounts {params} -T {threads} -a {input.saf} -o {output} {input.bam}"
+        "featureCounts {params} -T {threads} -a {input.saf} -o {output.counts} {input.bam}"
 
 
 rule format_fC_output:
@@ -37,3 +38,13 @@ rule format_fC_output:
         os.path.join(featureCount_dir, "log", "format_fC_output.log")
     script:
         "../scripts/format_fC_output.py"
+
+# rule format_file_names:
+#     input:
+#         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.bam.featureCounts.bam")
+#     output:
+#         os.path.join(featureCount_dir, "{sample}.featureCounts.bam")
+#     log:
+#         os.path.join(featureCount_dir, "log", "{sample}.format_file_names.log")
+#     script:
+#         "../scripts/rename.py"

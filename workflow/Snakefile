@@ -1,5 +1,6 @@
 import pandas as pd
 import os.path
+import glob
 
 configfile: "../config/config.yaml"
 
@@ -29,6 +30,7 @@ map_out_vb_dir = os.path.join(config["results"], "mapping_VB/")
 deeptools_dir = os.path.join(config["results"], "deeptools/")
 multiqc_dir = os.path.join(config["results"], "multiQC/")
 featureCount_dir = os.path.join(config["results"], "featureCounts/")
+pirna_dir = os.path.join(config["results"], "piRNA_analysis/")
 
 
 # ------------------------------------------------------------------------------
@@ -38,6 +40,7 @@ include: "rules/mapping.smk"
 include: "rules/mapping_VB.smk"
 include: "rules/deeptools.smk"
 include: "rules/multiQC.smk"
+include: "rules/repeats.smk"
 
 rule all:
     input:
@@ -55,6 +58,14 @@ rule all:
         os.path.join(featureCount_dir, "annotations", saf_name),
         os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
         os.path.join(featureCount_dir, "counts.tsv"),
+        # expand(os.path.join(featureCount_dir, "{sample}.featureCounts.bam"), sample = basenames),
+        expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = basenames),
+        os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
+        # expand(os.path.join(featureCount_dir, "{base}.repeats.featureCounts.bam"), base = basenames)
+
+
+
+
 
 
         # expand(os.path.join(map_out_dir, "{sample}.markdup.bam"), sample = basenames)
