@@ -25,14 +25,17 @@ for sample in samplesheet["name"]:
 
 trim_outdir = os.path.join(config["results"] + "trimming/")
 map_out_dir = os.path.join(config["results"], "mapping/")
+map_out_vb_dir = os.path.join(config["results"], "mapping_VB/")
 deeptools_dir = os.path.join(config["results"], "deeptools/")
 multiqc_dir = os.path.join(config["results"], "multiQC/")
+featureCount_dir = os.path.join(config["results"], "featureCounts/")
 
 
 # ------------------------------------------------------------------------------
-
+include: "rules/featureCounts.smk"
 include: "rules/trim_small.smk"
 include: "rules/mapping.smk"
+include: "rules/mapping_VB.smk"
 include: "rules/deeptools.smk"
 include: "rules/multiQC.smk"
 
@@ -46,7 +49,13 @@ rule all:
         os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
         os.path.join(deeptools_dir, "plotCorrelation.png"), 
         os.path.join(deeptools_dir, "plotPCA.png"),
-        os.path.join(multiqc_dir, "multiqc_report.html")
+        os.path.join(multiqc_dir, "multiqc_report.html"),
+        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = basenames),
+        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
+        os.path.join(featureCount_dir, "annotations", saf_name),
+        os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
+        os.path.join(featureCount_dir, "counts.tsv"),
+
 
         # expand(os.path.join(map_out_dir, "{sample}.markdup.bam"), sample = basenames)
 

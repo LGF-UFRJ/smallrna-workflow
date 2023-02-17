@@ -1,7 +1,7 @@
 
-index = config["bowtie_index"]
+index = config["bowtie_hic_index"]
 
-rule bowtie_genome:
+rule bowtie_hic_genome:
     input:
         lambda wildcards: os.path.join(trim_outdir, wildcards.sample + "_trimmed.fq.gz")
     output:
@@ -14,7 +14,7 @@ rule bowtie_genome:
         "bowtie {params} {input} > {output}"
 
 
-rule samtools_convert:
+rule samtools_hic_convert:
     input:
         lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sam")
     output:
@@ -27,14 +27,13 @@ rule samtools_convert:
         "rm {input} "
 
 
-
-rule count_mapped:
+rule count_mapped_hic:
     input:
         lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.bam")
     output:
         os.path.join(map_out_dir, "{sample}.sorted.counts.tsv")
     conda:
-        "../envs/small.yaml"
+        "../envs/pysam.yaml"
     log:
         os.path.join(map_out_dir, "log", "{sample}.count.log")
     script:
