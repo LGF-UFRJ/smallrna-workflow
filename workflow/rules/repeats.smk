@@ -1,3 +1,4 @@
+
 rule get_genome_unassigned:
     input:
         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.bam.featureCounts.bam")
@@ -6,7 +7,7 @@ rule get_genome_unassigned:
     log:
         os.path.join(pirna_dir, "log", "{sample}.genome_unassigned.log")
     conda:
-        "../envs/pysam.yaml"
+        "../envs/env_pysam.yaml"
     script:
         "../scripts/get_unassigned.py"
 

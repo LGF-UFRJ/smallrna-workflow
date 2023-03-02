@@ -7,18 +7,25 @@
 # but I cannot think of it right now  ¯\_(ツ)_/¯
 
 import pysam
+# import subprocess
+
+# subprocess.run("echo $PATH", shell=True)
 
 assigned = set()
-bam = pysam.AlignmentFile(snakemake.input[0], "rb")
-outbam = pysam.AlignmentFile(snakemake.output[0], "w", template=bam)
 
+bam = pysam.AlignmentFile(snakemake.input[0], "rb")
 for mapping in bam:
     if mapping.is_unmapped == False:
         for tag in mapping.get_tags():
             if tag == "XS:Z:Assigned":
                 assigned.add(mapping.query_name)
+bam.close()
 
+bam = pysam.AlignmentFile(snakemake.input[0], "rb")
+outbam = pysam.AlignmentFile(snakemake.output[0], "wb", template=bam)
 for mapping in bam:
     if mapping.is_unmapped == False and mapping.query_name not in assigned:
         outbam.write(mapping)
 
+bam.close()
+outbam.close()

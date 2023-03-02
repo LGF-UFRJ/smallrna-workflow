@@ -31,6 +31,7 @@ deeptools_dir = os.path.join(config["results"], "deeptools/")
 multiqc_dir = os.path.join(config["results"], "multiQC/")
 featureCount_dir = os.path.join(config["results"], "featureCounts/")
 pirna_dir = os.path.join(config["results"], "piRNA_analysis/")
+unassigned_dir = os.path.join(config["results"], "unassigned/")
 
 
 # ------------------------------------------------------------------------------
@@ -41,6 +42,7 @@ include: "rules/mapping_VB.smk"
 include: "rules/deeptools.smk"
 include: "rules/multiQC.smk"
 include: "rules/repeats.smk"
+include: "rules/mirna_identification.smk"
 
 rule all:
     input:
@@ -61,14 +63,14 @@ rule all:
         # expand(os.path.join(featureCount_dir, "{sample}.featureCounts.bam"), sample = basenames),
         expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = basenames),
         os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
+        # expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam.bai"), sample = basenames)
         # expand(os.path.join(featureCount_dir, "{base}.repeats.featureCounts.bam"), base = basenames)
-
-
-
-
-
-
-        # expand(os.path.join(map_out_dir, "{sample}.markdup.bam"), sample = basenames)
+        expand(os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam"), sample = basenames),
+        expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.fa"), sample = basenames),
+        expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf"), sample = basenames),
+        os.path.join(unassigned_dir, "known_pre_miRNA.fa"),
+        os.path.join(unassigned_dir, "genome.fa"),
+        expand(os.path.join(unassigned_dir, "{sample}_miRDeep", "results.log"), sample = basenames)
 
 
 

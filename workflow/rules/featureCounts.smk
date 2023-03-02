@@ -28,6 +28,14 @@ rule featureCounts:
         "featureCounts {params} -T {threads} -a {input.saf} -o {output.counts} {input.bam}"
 
 
+# rule index_featureCounts:
+#     input:
+#         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.bam.featureCounts.bam")
+#     output:
+#         outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam.bai"), sample = basenames)
+#     shell:
+#         "samtools index {input}"
+
 rule format_fC_output:
     input:
         os.path.join(featureCount_dir, "featureCounts.counts.tsv"),

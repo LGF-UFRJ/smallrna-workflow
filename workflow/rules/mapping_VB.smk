@@ -33,7 +33,7 @@ rule count_mapped_vb:
     output:
         os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv")
     conda:
-        "../envs/pysam.yaml"
+        "../envs/env_pysam.yaml"
     log:
         os.path.join(map_out_vb_dir, "log", "{sample}.count.log")
     script:
