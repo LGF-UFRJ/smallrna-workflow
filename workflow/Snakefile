@@ -47,39 +47,40 @@ include: "rules/miRDeep_identification.smk"
 rule all:
     input:
         # Quality Control
-        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = basenames),
-        expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = basenames),
-        os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
-        os.path.join(deeptools_dir, "plotCorrelation.png"), 
-        os.path.join(deeptools_dir, "plotPCA.png"),
-        os.path.join(multiqc_dir, "multiqc_report.html"),
+        # expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = samplesheet["names"]),
+        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = samplesheet["name"])
+        # expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = basenames),
+        # os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
+        # os.path.join(deeptools_dir, "plotCorrelation.png"), 
+        # os.path.join(deeptools_dir, "plotPCA.png"),
+        # os.path.join(multiqc_dir, "multiqc_report.html"),
 
-        # Mapping - HiC
-        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = basenames),
-        os.path.join(map_out_dir, "lengths.plot.png"),
+        # # Mapping - HiC
+        # expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames),
+        # expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
+        # expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = basenames),
+        # os.path.join(map_out_dir, "lengths.plot.png"),
         
-        # Mapping - VB
-        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = basenames),
-        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
+        # # Mapping - VB
+        # expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = basenames),
+        # expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
 
-        # Feature Counts
-        os.path.join(featureCount_dir, "annotations", saf_name),
-        os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
-        os.path.join(featureCount_dir, "counts.tsv"),
+        # # Feature Counts
+        # os.path.join(featureCount_dir, "annotations", saf_name),
+        # os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
+        # os.path.join(featureCount_dir, "counts.tsv"),
 
-        # Repeat analysis
-        expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = basenames),
-        os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
+        # # Repeat analysis
+        # expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = basenames),
+        # os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
 
-        # Unassigned characterization via miRDeep
-        expand(os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam"), sample = basenames),
-        expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.fa"), sample = basenames),
-        expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf"), sample = basenames),
-        os.path.join(unassigned_dir, "known_pre_miRNA.fa"),
-        os.path.join(unassigned_dir, "genome.fa"),
-        expand(os.path.join(unassigned_dir, "{sample}_miRDeep", "done.txt"), sample = basenames)
+        # # Unassigned characterization via miRDeep
+        # expand(os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam"), sample = basenames),
+        # expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.fa"), sample = basenames),
+        # expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf"), sample = basenames),
+        # os.path.join(unassigned_dir, "known_pre_miRNA.fa"),
+        # os.path.join(unassigned_dir, "genome.fa"),
+        # expand(os.path.join(unassigned_dir, "{sample}_miRDeep", "done.txt"), sample = basenames)
 
 
 

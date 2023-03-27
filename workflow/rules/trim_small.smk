@@ -1,16 +1,33 @@
 
 
+
+
+# rule link_inputs:
+#     input:
+#         # expand(os.path.join(basepath, "{sample}.fastq.gz"), sample = basenames_n_dir)
+#         lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".fastq.gz")
+#     output:
+#         outfiles = expand(os.path.join(trim_outdir, "file_links", "{filename}.fastq.gz"), filename = basenames)
+#     params:
+#         outdir = os.path.join(trim_outdir, "file_links/")
+#     log:
+#         os.path.join(trim_outdir, "log", "link_inputs.log")
+#     shell:
+#         "ln -s {input} {params.outdir}"
+
+
+
 rule link_inputs:
     input:
-        expand(os.path.join(basepath, "{sample}.fastq.gz"), sample = basenames_n_dir)
+        config["samplesheet"]
     output:
-        outfiles = expand(os.path.join(trim_outdir, "file_links", "{filename}.fastq.gz"), filename = basenames)
+        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = samplesheet["name"])
     params:
-        outdir = os.path.join(trim_outdir, "file_links/")
+        os.path.join(trim_outdir, "file_links/")
     log:
         os.path.join(trim_outdir, "log", "link_inputs.log")
-    shell:
-        "ln -s {input} {params.outdir}"
+    script:
+        "../scripts/get_input_links.py"
 
 rule trim_small:
     input:
