@@ -33,11 +33,35 @@ rule count_mapped_hic:
     output:
         os.path.join(map_out_dir, "{sample}.sorted.counts.tsv")
     conda:
-        "../envs/env_pysam.yaml"
+        "../envs/pysam0.yaml"
     log:
         os.path.join(map_out_dir, "log", "{sample}.count.log")
     script:
         "../scripts/count_mapped.py"
+
+rule length_distribution_hic:
+    input:
+        lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.bam")
+    output:
+        os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv")
+    params:
+        os.path.join(map_out_dir, "{sample}.sorted.counts.tsv")
+    conda:
+        "../envs/pysam0.yaml"
+    log:
+        os.path.join(map_out_dir, "log", "{sample}.lengths.log")
+    script:
+        "../scripts/length_distribution.py"
+
+rule plot_length_distribution_hic:
+    input:
+        expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = basenames)
+    output:
+        os.path.join(map_out_dir, "lengths.plot.png")
+    log:
+        os.path.join(map_out_dir, "log", "lengths.plot.log")
+    script:
+        "../scripts/plot_length_distribution.R"
 
 
 # rule sambamba_markdup:

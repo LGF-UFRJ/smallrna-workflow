@@ -7,7 +7,7 @@ rule get_repeats_unassigned:
     log:
         os.path.join(unassigned_dir, "log", "{sample}.genome.repeats.unassigned.log")
     conda:
-        "../envs/env_pysam.yaml"
+        "../envs/pysam0.yaml"
     script:
         "../scripts/get_unassigned.py"
 
@@ -45,9 +45,8 @@ rule get_fasta_pre_miRNA:
         os.path.join(unassigned_dir, "known_pre_miRNA.fa")
     log:
         os.path.join(unassigned_dir, "log", "get_fasta_pre_miRNA.log")
-    shell:
-        """cat {input.annot} | awk '$3=="pre_miRNA"' | """
-        "bedtools getfasta -s -fi {input.fa} -fo {output} -bed -"
+    script:
+        "../scripts/get_fasta_pre_miRNA.py"
 
 rule format_genome:
     input:
@@ -62,7 +61,8 @@ rule miRDeep2:
     input:
         lambda wildcards: os.path.join(unassigned_dir, wildcards.sample + ".reads_collapsed.fa")
     output:
-        os.path.join(unassigned_dir, "{sample}_miRDeep", "results.log")
+        # os.path.join(unassigned_dir, "{sample}_miRDeep", "results.log")
+        os.path.join(unassigned_dir, "{sample}_miRDeep", "done.txt")
     conda:
         "../envs/mirdeep.yaml"
     params:
@@ -75,4 +75,5 @@ rule miRDeep2:
         "mkdir -p {params.outdir} && "
         "cd {params.outdir} && "
         "miRDeep2.pl {input} {params.genome} "
-        "{params.arf} none {params.related_mature} {params.known} 2> results.log"
+        "{params.arf} none {params.related_mature} {params.known} 2> results.log && "
+        "touch done.txt"

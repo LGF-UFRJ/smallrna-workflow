@@ -7,7 +7,7 @@ rule get_genome_unassigned:
     log:
         os.path.join(pirna_dir, "log", "{sample}.genome_unassigned.log")
     conda:
-        "../envs/env_pysam.yaml"
+        "../envs/pysam0.yaml"
     script:
         "../scripts/get_unassigned.py"
 

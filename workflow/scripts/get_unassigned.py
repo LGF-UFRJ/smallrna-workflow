@@ -6,10 +6,8 @@
 # "unassigned" ones. Maybe there is a better and less complex way to do this, 
 # but I cannot think of it right now  ¯\_(ツ)_/¯
 
+import subprocess; subprocess.run("echo $PATH", shell=True)
 import pysam
-# import subprocess
-
-# subprocess.run("echo $PATH", shell=True)
 
 assigned = set()
 

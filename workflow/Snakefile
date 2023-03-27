@@ -42,35 +42,47 @@ include: "rules/mapping_VB.smk"
 include: "rules/deeptools.smk"
 include: "rules/multiQC.smk"
 include: "rules/repeats.smk"
-include: "rules/mirna_identification.smk"
+include: "rules/miRDeep_identification.smk"
 
 rule all:
     input:
-        # get_trim_output(sampledict, config["results"])
+        # Quality Control
         expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = basenames),
         expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = basenames),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
         os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
         os.path.join(deeptools_dir, "plotCorrelation.png"), 
         os.path.join(deeptools_dir, "plotPCA.png"),
         os.path.join(multiqc_dir, "multiqc_report.html"),
+
+        # Mapping - HiC
+        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames),
+        expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
+        expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = basenames),
+        os.path.join(map_out_dir, "lengths.plot.png"),
+        
+        # Mapping - VB
         expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = basenames),
         expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = basenames),
+
+        # Feature Counts
         os.path.join(featureCount_dir, "annotations", saf_name),
         os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
         os.path.join(featureCount_dir, "counts.tsv"),
-        # expand(os.path.join(featureCount_dir, "{sample}.featureCounts.bam"), sample = basenames),
+
+        # Repeat analysis
         expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = basenames),
         os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
-        # expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam.bai"), sample = basenames)
-        # expand(os.path.join(featureCount_dir, "{base}.repeats.featureCounts.bam"), base = basenames)
+
+        # Unassigned characterization via miRDeep
         expand(os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam"), sample = basenames),
         expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.fa"), sample = basenames),
         expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf"), sample = basenames),
         os.path.join(unassigned_dir, "known_pre_miRNA.fa"),
         os.path.join(unassigned_dir, "genome.fa"),
-        expand(os.path.join(unassigned_dir, "{sample}_miRDeep", "results.log"), sample = basenames)
+        expand(os.path.join(unassigned_dir, "{sample}_miRDeep", "done.txt"), sample = basenames)
+
+
+
 
 
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load snakemake deeptools
+module load slurm snakemake/7.0.4 deeptools R
 
 set -euo pipefail
 
