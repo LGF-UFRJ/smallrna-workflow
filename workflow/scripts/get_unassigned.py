@@ -15,7 +15,7 @@ bam = pysam.AlignmentFile(snakemake.input[0], "rb")
 for mapping in bam:
     if mapping.is_unmapped == False:
         for tag in mapping.get_tags():
-            if tag == "XS:Z:Assigned":
+            if tag[1] == "Assigned":
                 assigned.add(mapping.query_name)
 bam.close()
 

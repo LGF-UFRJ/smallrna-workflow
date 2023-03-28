@@ -4,7 +4,7 @@ from csv import reader
 import os.path
 
 fc_out = snakemake.input[0] 
-map_path = snakemake.input[1]
+# map_path = snakemake.params[0]
 fmt_out = snakemake.output[0]   
 
 with open(fc_out, "r") as fc, open(fmt_out, "w") as out:

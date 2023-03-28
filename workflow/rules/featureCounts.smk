@@ -15,10 +15,10 @@ rule gff_extract:
 rule featureCounts:
     input:
         saf = os.path.join(featureCount_dir, "annotations", saf_name),
-        bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = basenames)
+        bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = samplesheet["name"])
     output:
         counts = os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
-        outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam"), sample = basenames)
+        outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam"), sample = samplesheet["name"])
     log:
         os.path.join(featureCount_dir, "log", "featureCounts.log")
     threads: 6
@@ -32,14 +32,13 @@ rule featureCounts:
 #     input:
 #         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.bam.featureCounts.bam")
 #     output:
-#         outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam.bai"), sample = basenames)
+#         outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam.bai"), sample = samplesheet["name"])
 #     shell:
 #         "samtools index {input}"
 
 rule format_fC_output:
     input:
-        os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
-        map_out_vb_dir
+        os.path.join(featureCount_dir, "featureCounts.counts.tsv")
     output:
         os.path.join(featureCount_dir, "counts.tsv")
     log:

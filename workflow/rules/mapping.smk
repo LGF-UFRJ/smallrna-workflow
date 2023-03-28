@@ -55,7 +55,7 @@ rule length_distribution_hic:
 
 rule plot_length_distribution_hic:
     input:
-        expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = basenames)
+        expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = samplesheet["name"])
     output:
         os.path.join(map_out_dir, "lengths.plot.png")
     log:

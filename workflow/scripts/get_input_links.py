@@ -8,7 +8,10 @@ outdir = snakemake.params[0]
 sp.run(f"mkdir -p {outdir}", shell=True)
 
 for name in samplesheet["name"]:
-    path = samplesheet[samplesheet["name"] == name]
+    path = samplesheet[samplesheet["name"] == name]["path"].to_string(index = False)
     outname = os.path.join(outdir, name + ".fastq.gz")
-    command = f"ln -s {path} > {outname}"
+    command = f"ln -s {path} {outname}"
     run = sp.run(command, shell=True, capture_output=True)
+    print(command)
+    print(run.stdout)
+    print(run.stderr)

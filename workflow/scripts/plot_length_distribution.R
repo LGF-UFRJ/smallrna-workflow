@@ -14,26 +14,29 @@ read_mutate_tsv <- function(path){
     return(tab)
 }
 
-# print(snakemake@input)
-
-# files <- c(
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/230120_01_nymph_rhodnius_rep1_R1.sorted.lengths.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/230120_10_nymph_rhodnius_rep2_R1.sorted.lengths.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/230120_04_embryo_rhodnius_rep2_R1.sorted.lengths.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/230120_09_embryo_rhodnius_rep1_R1.sorted.lengths.tsv"
+# files <- list(
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/pvs1.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/pvs2.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/egg1.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/egg2.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/emb1.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/emb2.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/nym1.sorted.lengths.tsv",
+#   "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/nym2.sorted.lengths.tsv"
 # )
+
 # tables <- lapply(files, read_mutate_tsv)
+
 
 tables <- lapply(snakemake@input, read_mutate_tsv)
 
 merged_table <- bind_rows(tables)
+merged_table$sample <- factor(merged_table$sample, levels = c("nym2", "nym1",  "emb2", "emb1", "egg2", "egg1", "pvs2", "pvs1"))
 
 png(snakemake@output[[1]], height = 400, width = 1000)
 ggplot(merged_table, aes(length, sample, height = total, group = sample, fill = sample)) + 
-#   geom_ridgeline(scale=1) 
-  geom_density_ridges(stat="identity", scale = 4, alpha = 0.5) +
+  geom_density_ridges(stat="identity", scale = 4, alpha = 0.5, show.legend = FALSE) +
   scale_x_continuous(breaks = c(18:35), limits = c(18,35)) +
-  theme_ridges() +
+  theme_ridges(font_size = 20) +
   ylab("")
-#   xlim(18, 35)
 dev.off()

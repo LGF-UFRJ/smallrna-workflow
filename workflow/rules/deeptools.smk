@@ -1,7 +1,7 @@
 
 rule multiBamSummary:   
     input:
-        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = basenames)
+        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = samplesheet["name"])
     output:
         summary = os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
         sfactors = os.path.join(deeptools_dir, "multiBamSummary.scallingFactors.tsv")

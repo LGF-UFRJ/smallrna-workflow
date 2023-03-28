@@ -15,10 +15,10 @@ rule get_genome_unassigned:
 rule featureCounts_repeats:
     input:
         gtf = config["repeat_annotation"],
-        bam = expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = basenames)
+        bam = expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = samplesheet["name"])
     output:
         counts = os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
-        outbam = expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam.featureCounts.bam"), sample = basenames)
+        outbam = expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam.featureCounts.bam"), sample = samplesheet["name"])
     log:
         os.path.join(pirna_dir, "log", "repeats.featureCounts.log")
     threads: 6
