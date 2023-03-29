@@ -12,13 +12,26 @@ rule gff_extract:
         "../scripts/get_gff_info.py"
 
 
+rule merge_annotation:
+    input: 
+        repeat_gtf = config["repeat_annotation"],
+        features_saf = os.path.join(featureCount_dir, "annotations", saf_name),
+    output: 
+        repeat_saf = os.path.join(featureCount_dir, "annotations", "repeats.saf"),
+        merged_saf = os.path.join(featureCount_dir, "annotations", "merged_annotation.saf")
+    script:
+        "../scripts/merge_annotation.py" 
+
+
 rule featureCounts:
     input:
-        saf = os.path.join(featureCount_dir, "annotations", saf_name),
-        bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = samplesheet["name"])
+        # saf = os.path.join(featureCount_dir, "annotations", saf_name),
+        saf = os.path.join(featureCount_dir, "annotations", "merged_annotation.saf"),
+        # bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = samplesheet["name"])
+        bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.nh.bam"), sample = samplesheet["name"])
     output:
         counts = os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
-        outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam"), sample = samplesheet["name"])
+        outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.nh.bam.featureCounts.bam"), sample = samplesheet["name"])
     log:
         os.path.join(featureCount_dir, "log", "featureCounts.log")
     threads: 6
@@ -26,15 +39,6 @@ rule featureCounts:
         " -F SAF -M -O -R BAM --fraction"
     shell:
         "featureCounts {params} -T {threads} -a {input.saf} -o {output.counts} {input.bam}"
-
-
-# rule index_featureCounts:
-#     input:
-#         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.bam.featureCounts.bam")
-#     output:
-#         outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.bam.featureCounts.bam.bai"), sample = samplesheet["name"])
-#     shell:
-#         "samtools index {input}"
 
 rule format_fC_output:
     input:
@@ -46,12 +50,16 @@ rule format_fC_output:
     script:
         "../scripts/format_fC_output.py"
 
-# rule format_file_names:
-#     input:
-#         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.bam.featureCounts.bam")
-#     output:
-#         os.path.join(featureCount_dir, "{sample}.featureCounts.bam")
-#     log:
-#         os.path.join(featureCount_dir, "log", "{sample}.format_file_names.log")
-#     script:
-#         "../scripts/rename.py"
+
+rule plot_library_profile:
+    input:
+        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
+    params:
+        config["annotations"],
+        os.path.join(featureCount_dir, "counts.tsv"),
+    output:
+        os.path.join(featureCount_dir, "libraries_profile.plot.png")
+    log:
+        os.path.join(featureCount_dir, "log", "libraries_profile.plot.log")
+    script:
+        "../scripts/plot_library_profile.R"

@@ -1,1 +1,0 @@
-/data/iovino/sequencing_data/170727_NB501361_0177_AHMFYWAFXX/Project_818_Iovino_Iovino/Sample_Lib_818_1/1_Lib_818_1_R1.fastq.gz

@@ -25,6 +25,7 @@ rule plotCorrelation:
         " -in {input} -c pearson -p heatmap -o {output.corr} "
         " --outFileCorMatrix {output.table} "
         " --colorMap YlOrRd "
+        " --plotNumbers"
         " --removeOutliers"
 
 

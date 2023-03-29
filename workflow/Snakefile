@@ -41,6 +41,8 @@ rule all:
 
         # Mapping - HiC
         expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam.bai"), sample = samplesheet["name"]),
         expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
         expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = samplesheet["name"]),
         os.path.join(map_out_dir, "lengths.plot.png"),
@@ -48,15 +50,22 @@ rule all:
         # Mapping - VB
         expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
         expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.uniquely.bam.bai"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.nh.bam"), sample = samplesheet["name"]),
 
         # Feature Counts
         os.path.join(featureCount_dir, "annotations", saf_name),
+        os.path.join(featureCount_dir, "annotations", "merged_annotation.saf"),
         os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
         os.path.join(featureCount_dir, "counts.tsv"),
 
+        # Library profile
+        os.path.join(featureCount_dir, "libraries_profile.plot.png")
+
         # Repeat analysis
-        expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = samplesheet["name"]),
-        os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
+        # expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = samplesheet["name"]),
+        # os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
 
         # # Unassigned characterization via miRDeep
         # expand(os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam"), sample = samplesheet["name"]),

@@ -12,7 +12,7 @@ with open(fc_out, "r") as fc, open(fmt_out, "w") as out:
     for line in fc_csv:
         if not line[0].startswith("#"):
             if line[0].startswith("Geneid"):
-                fmt_header = [os.path.basename(i).replace(".sorted.bam", "") for i in line]
+                fmt_header = [os.path.basename(i).replace(".sorted.nh.bam", "") for i in line]
                 print(*fmt_header, sep="\t", file=out)
             else:
                 print(*line, sep="\t", file=out)
