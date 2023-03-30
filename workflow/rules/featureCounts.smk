@@ -54,9 +54,9 @@ rule format_fC_output:
 rule plot_library_profile:
     input:
         expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
+        os.path.join(featureCount_dir, "counts.tsv"),
     params:
         config["annotations"],
-        os.path.join(featureCount_dir, "counts.tsv"),
     output:
         os.path.join(featureCount_dir, "libraries_profile.plot.png")
     log:

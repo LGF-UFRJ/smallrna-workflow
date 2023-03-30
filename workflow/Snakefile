@@ -16,7 +16,10 @@ deeptools_dir = os.path.join(config["results"], "deeptools/")
 multiqc_dir = os.path.join(config["results"], "multiQC/")
 featureCount_dir = os.path.join(config["results"], "featureCounts/")
 pirna_dir = os.path.join(config["results"], "piRNA_analysis/")
-unassigned_dir = os.path.join(config["results"], "unassigned/")
+mirdeep_dir = os.path.join(config["results"], "mirDeep/")
+cluster_dir = os.path.join(config["results"], "clusters/")
+pirna_dir = os.path.join(config["results"], "piRNAs/")
+mirna_dir = os.path.join(config["results"], "miRNAs/")
 
 
 # ------------------------------------------------------------------------------
@@ -26,8 +29,10 @@ include: "rules/mapping.smk"
 include: "rules/mapping_VB.smk"
 include: "rules/deeptools.smk"
 include: "rules/multiQC.smk"
-include: "rules/repeats.smk"
 include: "rules/miRDeep_identification.smk"
+include: "rules/cluster_identification.smk"
+include: "rules/piRNAs.smk"
+include: "rules/miRNAs.smk"
 
 rule all:
     input:
@@ -61,19 +66,41 @@ rule all:
         os.path.join(featureCount_dir, "counts.tsv"),
 
         # Library profile
-        os.path.join(featureCount_dir, "libraries_profile.plot.png")
+        os.path.join(featureCount_dir, "libraries_profile.plot.png"),
 
         # Repeat analysis
         # expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = samplesheet["name"]),
         # os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
 
-        # # Unassigned characterization via miRDeep
-        # expand(os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam"), sample = samplesheet["name"]),
-        # expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.fa"), sample = samplesheet["name"]),
-        # expand(os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf"), sample = samplesheet["name"]),
-        # os.path.join(unassigned_dir, "known_pre_miRNA.fa"),
-        # os.path.join(unassigned_dir, "genome.fa"),
-        # expand(os.path.join(unassigned_dir, "{sample}_miRDeep", "done.txt"), sample = samplesheet["name"])
+        # Unassigned characterization via miRDeep
+        # expand(os.path.join(mirdeep_dir, "{sample}.nh.unassigned.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(mirdeep_dir, "{sample}.reads_collapsed.fa"), sample = samplesheet["name"]),
+        # expand(os.path.join(mirdeep_dir, "{sample}.reads_collapsed.arf"), sample = samplesheet["name"]),
+        # os.path.join(mirdeep_dir, "known_pre_miRNA.fa"),
+        # os.path.join(mirdeep_dir, "genome.fa"),
+        # expand(os.path.join(mirdeep_dir, "{sample}_miRDeep", "results.log"), sample = samplesheet["name"]),
+
+        # Cluster identification via proTRAC
+        expand(os.path.join(cluster_dir, "{sample}_clusters", "protrac_results.log"), sample = samplesheet["name"]),
+
+        # piRNAs
+        ## Length distribution
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.lengths.tsv"), sample = samplesheet["name"]),
+        os.path.join(pirna_dir, "piRNAs.line.lengths.plot.png"),
+        ## Pingpong signal
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"]),
+        os.path.join(pirna_dir, "lines.piRNAs.pingpong.plot.png"),
+        ## Nucleotide Bias
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.ntfreq.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.ntfreq.tsv"), sample = samplesheet["name"]),
+        os.path.join(pirna_dir, "piRNAs.sense.ntfreq.plot.png"),
+        os.path.join(pirna_dir, "piRNAs.antisense.ntfreq.plot.png"),
+
+
+
+
+        
 
 
 

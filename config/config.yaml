@@ -14,5 +14,9 @@ bowtie_hic_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/res
 annotations: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/annotation/VectorBase-61_RprolixusCDC.gff"
 repeat_annotation: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/repeats/VectorBase-51_RprolixusCDC_Genome.fasta.out.gtf"
 
+repeat_masker_out: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/repeats/Rhodnius_prolixus-3.0.3_HiC.fasta.out"
+
 related_mirs: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/drosophila_miRNAs/dm3_mature.fmt.fa"
+
+
 

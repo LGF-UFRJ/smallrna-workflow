@@ -38,5 +38,14 @@ ggplot(merged_table, aes(length, sample, height = total, group = sample, fill = 
   geom_density_ridges(stat="identity", scale = 4, alpha = 0.5, show.legend = FALSE) +
   scale_x_continuous(breaks = c(18:35), limits = c(18,30)) +
   theme_ridges(font_size = 20) +
-  ylab("")
+  ylab("") + xlab("Length (nt)")
+dev.off()
+
+
+merged_table$sample <- factor(merged_table$sample, levels = c("pvs1", "pvs2",  "egg1", "egg2", "emb1", "emb2", "nym1", "nym2"))
+png(snakemake@output[[2]], width = 800)
+ggplot(merged_table, aes(x = length, y = total, color=sample)) + 
+    geom_line(linewidth=1) +
+    theme_bw(base_size = 20) +
+    ylab("RPM") + xlab("Length (nt)")
 dev.off()

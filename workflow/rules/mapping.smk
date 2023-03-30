@@ -83,7 +83,8 @@ rule plot_length_distribution_hic:
     input:
         expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = samplesheet["name"])
     output:
-        os.path.join(map_out_dir, "lengths.plot.png")
+        os.path.join(map_out_dir, "ridges.lengths.plot.png"),
+        os.path.join(map_out_dir, "line.lengths.plot.png"),
     log:
         os.path.join(map_out_dir, "log", "lengths.plot.log")
     script:

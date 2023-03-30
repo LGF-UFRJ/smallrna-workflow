@@ -14,23 +14,16 @@ get_basenames <- function(map_count_files){
 }
 
 # Inputs
-# count_file <- "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/sandbox/library_profile/counts.tsv"
-# gff_file <- "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/sandbox/library_profile/VectorBase-61_RprolixusCDC.gff"
-# map_count_files <- c(
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/pvs1.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/pvs2.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/egg1.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/egg2.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/emb1.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/emb2.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/nym1.sorted.counts.tsv",
-#     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/mapping/nym2.sorted.counts.tsv"
-# )
 
-map_count_files <- snakemake@input
+
+len_input <- length(snakemake@input)
+map_counts_range <- c(1:(len_input-1))
+
+map_count_files <- snakemake@input[map_counts_range]
+count_file <- snakemake@input[len_input][[1]]
 gff_file <- snakemake@params[[1]]
-count_file <- snakemake@params[[2]]
 output <- snakemake@output[[1]]
+
 
 # Importing datasets
 counts <- read_tsv(count_file)

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-module load slurm snakemake/7.0.4 deeptools R trim_galore bowtie samtools MultiQC subread
+module load slurm snakemake/7.0.4 deeptools R trim_galore bowtie samtools MultiQC subread bedtools2
 
 set -euo pipefail
 

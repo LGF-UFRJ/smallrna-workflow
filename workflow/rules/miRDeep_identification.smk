@@ -1,11 +1,11 @@
 
-rule get_repeats_unassigned:
+rule get_unassigned:
     input:
-        lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".genes.unassigned.bam.featureCounts.bam")
+        lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.nh.bam.featureCounts.bam")
     output:
-        os.path.join(unassigned_dir, "{sample}.gene.repeats.unassigned.bam")
+        os.path.join(mirdeep_dir, "{sample}.nh.unassigned.bam")
     log:
-        os.path.join(unassigned_dir, "log", "{sample}.genome.repeats.unassigned.log")
+        os.path.join(mirdeep_dir, "log", "{sample}.nh.unassigned.log")
     conda:
         "../envs/pysam0.yaml"
     script:
@@ -13,11 +13,11 @@ rule get_repeats_unassigned:
 
 rule bam_to_collapsed_fasta:
     input:
-        lambda wildcards: os.path.join(unassigned_dir, wildcards.sample + ".gene.repeats.unassigned.bam")
+        lambda wildcards: os.path.join(mirdeep_dir, wildcards.sample + ".nh.unassigned.bam")
     output:
-        os.path.join(unassigned_dir, "{sample}.reads_collapsed.fa")
+        os.path.join(mirdeep_dir, "{sample}.reads_collapsed.fa")
     log:
-        os.path.join(unassigned_dir, "log", "{sample}.reads_collapsed.fa.log")
+        os.path.join(mirdeep_dir, "log", "{sample}.reads_collapsed.fa.log")
     conda:
         "../envs/mirdeep.yaml"
     shell:
@@ -25,11 +25,11 @@ rule bam_to_collapsed_fasta:
 
 rule map_mirdeep:
     input:
-        lambda wildcards: os.path.join(unassigned_dir, wildcards.sample + ".reads_collapsed.fa")
+        lambda wildcards: os.path.join(mirdeep_dir, wildcards.sample + ".reads_collapsed.fa")
     output:
-        os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf")
+        os.path.join(mirdeep_dir, "{sample}.reads_collapsed.arf")
     log:
-        os.path.join(unassigned_dir, "log", "{sample}.reads_collapsed.arf.log")
+        os.path.join(mirdeep_dir, "log", "{sample}.reads_collapsed.arf.log")
     conda:
         "../envs/mirdeep.yaml"
     params:
@@ -42,9 +42,9 @@ rule get_fasta_pre_miRNA:
         annot = config["annotations"],
         fa = config["genome_vb"]
     output:
-        os.path.join(unassigned_dir, "known_pre_miRNA.fa")
+        os.path.join(mirdeep_dir, "known_pre_miRNA.fa")
     log:
-        os.path.join(unassigned_dir, "log", "get_fasta_pre_miRNA.log")
+        os.path.join(mirdeep_dir, "log", "get_fasta_pre_miRNA.log")
     script:
         "../scripts/get_fasta_pre_miRNA.py"
 
@@ -52,28 +52,27 @@ rule format_genome:
     input:
         config["genome_vb"]
     output:
-        os.path.join(unassigned_dir, "genome.fa")
+        os.path.join(mirdeep_dir, "genome.fa")
     script:
         "../scripts/format_genome.py"
 
 
 rule miRDeep2:
     input:
-        lambda wildcards: os.path.join(unassigned_dir, wildcards.sample + ".reads_collapsed.fa")
-    output:
-        # os.path.join(unassigned_dir, "{sample}_miRDeep", "results.log")
-        os.path.join(unassigned_dir, "{sample}_miRDeep", "done.txt")
+        fasta = lambda wildcards: os.path.join(mirdeep_dir, wildcards.sample + ".reads_collapsed.fa"),
+        arf = os.path.join(mirdeep_dir, "{sample}.reads_collapsed.arf"),
+        genome = os.path.join(mirdeep_dir, "genome.fa"),
+        known = os.path.join(mirdeep_dir, "known_pre_miRNA.fa"),
+    log:
+        # os.path.join(mirdeep_dir, "{sample}_miRDeep", "results.log")
+        os.path.join(mirdeep_dir, "{sample}_miRDeep", "results.log")
     conda:
         "../envs/mirdeep.yaml"
     params:
-        genome = os.path.join(unassigned_dir, "genome.fa"),
-        arf = os.path.join(unassigned_dir, "{sample}.reads_collapsed.arf"),
         related_mature = config["related_mirs"],
-        known = os.path.join(unassigned_dir, "known_pre_miRNA.fa"),
-        outdir = os.path.join(unassigned_dir, "{sample}_mirDeep")
+        outdir = os.path.join(mirdeep_dir, "{sample}_miRDeep")
     shell:
         "mkdir -p {params.outdir} && "
         "cd {params.outdir} && "
-        "miRDeep2.pl {input} {params.genome} "
-        "{params.arf} none {params.related_mature} {params.known} 2> results.log && "
-        "touch done.txt"
+        "miRDeep2.pl {input.fasta} {input.genome} "
+        "{input.arf} none {params.related_mature} {input.known} 2> {log}"

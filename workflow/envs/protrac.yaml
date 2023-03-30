@@ -1,0 +1,32 @@
+name: protrac
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - expat=2.5.0=h27087fc_0
+  - fontconfig=2.14.2=h14ed4e7_0
+  - freetype=2.12.1=hca18f0e_1
+  - giflib=5.2.1=h0b41bf4_3
+  - icu=68.2=h9c3ff4c_0
+  - jpeg=9e=h0b41bf4_3
+  - libgcc-ng=12.2.0=h65d4601_19
+  - libgd=2.3.2=h78a0170_0
+  - libgomp=12.2.0=h65d4601_19
+  - libnsl=2.0.0=h7f98852_0
+  - libpng=1.6.39=h753d276_0
+  - libstdcxx-ng=12.2.0=h46fd767_19
+  - libtiff=4.2.0=hf544144_3
+  - libuuid=2.38.1=h0b41bf4_0
+  - libwebp=1.2.0=h3452ae3_0
+  - libwebp-base=1.2.0=h7f98852_2
+  - libzlib=1.2.13=h166bdaf_4
+  - perl=5.32.1=2_h7f98852_perl5
+  - perl-gd=2.56=0
+  - protrac=2.4.2=pl5321hdfd78af_3
+  - xz=5.2.6=h166bdaf_0
+  - zlib=1.2.13=h166bdaf_4
+  - zstd=1.5.2=h3eb15da_6
+prefix: /localenv/brito/mambaforge/envs/protrac
