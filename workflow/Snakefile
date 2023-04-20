@@ -5,13 +5,16 @@ import glob
 configfile: "../config/config.yaml"
 
 # Variables --------------------------------------------------------------------
-
 pd.set_option('display.max_colwidth', None)
 samplesheet = pd.read_csv(config["samplesheet"], sep="\t")
+stages = ["pvs", "egg", "emb", "nym"]
 
-trim_outdir = os.path.join(config["results"] + "trimming/")
+# Output directories -----------------------------------------------------------
+fastq_dir = os.path.join(config["results"], "fastq_files")
+trim_outdir = os.path.join(config["results"],"trimming/")
 map_out_dir = os.path.join(config["results"], "mapping/")
 map_out_vb_dir = os.path.join(config["results"], "mapping_VB/")
+map_out_virus_dir = os.path.join(config["results"], "mapping_viruses/")
 deeptools_dir = os.path.join(config["results"], "deeptools/")
 multiqc_dir = os.path.join(config["results"], "multiQC/")
 featureCount_dir = os.path.join(config["results"], "featureCounts/")
@@ -20,9 +23,10 @@ mirdeep_dir = os.path.join(config["results"], "mirDeep/")
 cluster_dir = os.path.join(config["results"], "clusters/")
 pirna_dir = os.path.join(config["results"], "piRNAs/")
 mirna_dir = os.path.join(config["results"], "miRNAs/")
+bamcoverage_dir = os.path.join(config["results"], "bamCoverage_dir/")
 
 
-# ------------------------------------------------------------------------------
+# Rules ------------------------------------------------------------------------
 include: "rules/featureCounts.smk"
 include: "rules/trim_small.smk"
 include: "rules/mapping.smk"
@@ -31,71 +35,94 @@ include: "rules/deeptools.smk"
 include: "rules/multiQC.smk"
 include: "rules/miRDeep_identification.smk"
 include: "rules/cluster_identification.smk"
+include: "rules/cluster_plots.smk"
+include: "rules/cluster_operations.smk"
 include: "rules/piRNAs.smk"
 include: "rules/miRNAs.smk"
+include: "rules/bamCoverage.smk"
+include: "rules/mapping_viruses.smk"
 
+# Execution --------------------------------------------------------------------
 rule all:
     input:
-        # Quality Control
-        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = samplesheet["name"]),
+        # # Quality Control
+        expand(os.path.join(fastq_dir, "{sample}.fastq.gz"), sample = samplesheet["name"]),
         expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = samplesheet["name"]),
-        os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
+        # os.path.join(deeptools_dir, "multiBamSummary.results.npz"),
         os.path.join(deeptools_dir, "plotCorrelation.png"), 
         os.path.join(deeptools_dir, "plotPCA.png"),
         os.path.join(multiqc_dir, "multiqc_report.html"),
 
         # Mapping - HiC
-        expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
-        expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam.bai"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam.bai"), sample = samplesheet["name"]),
         expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
         expand(os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv"), sample = samplesheet["name"]),
-        os.path.join(map_out_dir, "lengths.plot.png"),
+        os.path.join(map_out_dir, "line.lengths.plot.png"),
         
         # Mapping - VB
-        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
-        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
-        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_vb_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_vb_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
         expand(os.path.join(map_out_vb_dir, "{sample}.sorted.uniquely.bam.bai"), sample = samplesheet["name"]),
-        expand(os.path.join(map_out_vb_dir, "{sample}.sorted.nh.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(map_out_vb_dir, "{sample}.sorted.nh.bam"), sample = samplesheet["name"]),
+
+        # Mapping - Viruses
+        expand(os.path.join(map_out_virus_dir, "{sample}.viruses.sorted.bam"), sample = samplesheet["name"]),
+        os.path.join(map_out_virus_dir, "line.lengths.plot.png"),
+
+
+        # Coverages
+        # os.path.join(bamcoverage_dir, "effective_genome_size.txt"),
+        expand(os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.bw"), sample = samplesheet["name"]),
+        expand(os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.pos.bw"), sample = samplesheet["name"]),
+        expand(os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.neg.bw"), sample = samplesheet["name"]),
 
         # Feature Counts
-        os.path.join(featureCount_dir, "annotations", saf_name),
-        os.path.join(featureCount_dir, "annotations", "merged_annotation.saf"),
-        os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
-        os.path.join(featureCount_dir, "counts.tsv"),
+        # os.path.join(featureCount_dir, "annotations", saf_name),
+        # os.path.join(featureCount_dir, "annotations", "merged_annotation.saf"),
+        # os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
+        # os.path.join(featureCount_dir, "counts.tsv"),
 
         # Library profile
         os.path.join(featureCount_dir, "libraries_profile.plot.png"),
 
-        # Repeat analysis
-        # expand(os.path.join(pirna_dir, "{sample}.genes.unassigned.bam"), sample = samplesheet["name"]),
-        # os.path.join(pirna_dir, "repeats.featureCounts.counts.tsv"),
+        # Cluster identification
+        # os.path.join(cluster_dir, "genome.1kb.bed"),
+        # expand(os.path.join(cluster_dir, "{sample}.clusters.bed"), sample = samplesheet["name"]),
+        # expand(os.path.join(cluster_dir, "{stage}.clusters.bed"), stage = stages),
+        # os.path.join(cluster_dir, "clusters.bed"),
+        # os.path.join(cluster_dir, "clusters.counts.tsv"),
+        # expand(os.path.join(cluster_dir, "clusters.pos.counts.tsv")),
+        # expand(os.path.join(pirna_dir, "{sample}.uniquely.ids.txt"), sample = samplesheet["name"]),
+        # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.bam"), sample = samplesheet["name"]),
+        # os.path.join(cluster_dir, "clusters.final.tsv"),
+        os.path.join(cluster_dir, "clusters.bb"),
+        os.path.join(cluster_plots, "clusters.karyoplot.png"),
+        os.path.join(cluster_plots, "clusters.sizes.png"),
+        os.path.join(cluster_plots, "clusters.overlap.upset.png"),
+        # os.path.join(cluster_dir, "clusters.overlap.tsv"),
+        # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.pos.bam"), sample = samplesheet["name"]),
 
-        # Unassigned characterization via miRDeep
-        # expand(os.path.join(mirdeep_dir, "{sample}.nh.unassigned.bam"), sample = samplesheet["name"]),
-        # expand(os.path.join(mirdeep_dir, "{sample}.reads_collapsed.fa"), sample = samplesheet["name"]),
-        # expand(os.path.join(mirdeep_dir, "{sample}.reads_collapsed.arf"), sample = samplesheet["name"]),
-        # os.path.join(mirdeep_dir, "known_pre_miRNA.fa"),
-        # os.path.join(mirdeep_dir, "genome.fa"),
-        # expand(os.path.join(mirdeep_dir, "{sample}_miRDeep", "results.log"), sample = samplesheet["name"]),
 
-        # Cluster identification via proTRAC
-        expand(os.path.join(cluster_dir, "{sample}_clusters", "protrac_results.log"), sample = samplesheet["name"]),
 
         # piRNAs
         ## Length distribution
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.lengths.tsv"), sample = samplesheet["name"]),
+        # expand(os.path.join(pirna_dir, "{sample}.piRNAs.lengths.tsv"), sample = samplesheet["name"]),
         os.path.join(pirna_dir, "piRNAs.line.lengths.plot.png"),
         ## Pingpong signal
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"]),
+        # expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"]),
         os.path.join(pirna_dir, "lines.piRNAs.pingpong.plot.png"),
         ## Nucleotide Bias
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.bam"), sample = samplesheet["name"]),
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.ntfreq.tsv"), sample = samplesheet["name"]),
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.ntfreq.tsv"), sample = samplesheet["name"]),
+        # expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.bam"), sample = samplesheet["name"]),
+        # expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.ntfreq.tsv"), sample = samplesheet["name"]),
+        # expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.ntfreq.tsv"), sample = samplesheet["name"]),
         os.path.join(pirna_dir, "piRNAs.sense.ntfreq.plot.png"),
         os.path.join(pirna_dir, "piRNAs.antisense.ntfreq.plot.png"),
+
+        # miRNAs
+        expand(os.path.join(mirna_dir, "{sample}.miRNAs.bam"), sample = samplesheet["name"]),
 
 
 

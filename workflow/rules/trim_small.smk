@@ -1,23 +1,24 @@
-rule link_inputs:
+rule fastq_files:
     input:
         config["samplesheet"]
     output:
-        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"), sample = samplesheet["name"])
+        expand(os.path.join(fastq_dir, "{sample}.fastq.gz"), sample = samplesheet["name"])
     params:
-        os.path.join(trim_outdir, "file_links/")
+        fastq_dir
     log:
-        os.path.join(trim_outdir, "log", "link_inputs.log")
+        os.path.join(fastq_dir, "log", "fastq_files.log")
     script:
-        "../scripts/get_input_links.py"
+        "../scripts/get_input_fastqs.py"
 
 rule trim_small:
     input:
-        expand(os.path.join(trim_outdir, "file_links", "{sample}.fastq.gz"),
+        expand(os.path.join(fastq_dir, "{sample}.fastq.gz"),
                sample = samplesheet["name"])
     output:
-        os.path.join(trim_outdir, "{sample}_trimmed.fq.gz")
+        expand(os.path.join(trim_outdir, "{sample}_trimmed.fq.gz"), sample = samplesheet["name"]),
+    priority: 100
     log:
-        os.path.join(trim_outdir, "log", "{sample}.trim_small.log")
+        os.path.join(trim_outdir, "log", "trim_small.log")
     params:
         f"--fastqc --length 18 --max_length 35 -o {trim_outdir}"
     shell:

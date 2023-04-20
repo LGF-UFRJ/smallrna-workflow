@@ -6,6 +6,7 @@ rule bowtie_vb_genome:
         lambda wildcards: os.path.join(trim_outdir, wildcards.sample + "_trimmed.fq.gz")
     output:
         os.path.join(map_out_vb_dir, "{sample}.sam")
+    threads: 6
     params:
         # f"-v 3 -k 5 -m 50 -S -p 6 --best --strata --chunkmbs 1000 {index}"
         f"-v 3 -a -m 50 -S -p 6 --best --strata --chunkmbs 1000 {index}"

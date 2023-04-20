@@ -4,12 +4,17 @@ samplesheet: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/config/s
 
 genome: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta"
 genome_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta.fai"
+genome_vb_transfered: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/annotation/VectorBase-51_RprolixusCDC_AnnotatedTranscripts.minimap2.sorted.bedSort.bb"
 
 genome_vb: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/VectorBase-61_RprolixusCDC_Genome.fasta"
 genome_vb_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/VectorBase-61_RprolixusCDC_Genome.fasta.fai"
 
+genome_virus: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/viruses.fa"
+genome_virus_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/viruses.fa.fai"
+
 bowtie_vb_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_vb/rhodnius_vb"
 bowtie_hic_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_hic/rhodnius_hic"
+bowtie_virus_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_viruses/rhodnius_viruses"
 
 annotations: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/annotation/VectorBase-61_RprolixusCDC.gff"
 repeat_annotation: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/repeats/VectorBase-51_RprolixusCDC_Genome.fasta.out.gtf"

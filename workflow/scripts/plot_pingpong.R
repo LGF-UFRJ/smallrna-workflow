@@ -23,6 +23,8 @@ read_mutate_tsv <- function(path){
 #     "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/piRNAs/pvs2.piRNAs.pingpong.tsv"
 # )
 
+cols <- c("#81488f", "#cf05c5", "#414cb6", "#3990d8", "#0c9673", "#38792b", "#b9b603", "#ca4a4a")
+
 pingpong_files <- snakemake@input
 ridges <- snakemake@output[[1]]
 lines <- snakemake@output[[2]]
@@ -52,6 +54,7 @@ ppz_bind$sample <- factor(ppz_bind$sample, levels = c("pvs1", "pvs2",  "egg1", "
 png(lines, width = 800)
 ggplot(ppz_bind, aes(x = overlap_length, y = pct, color=sample)) + 
     geom_line(linewidth=1) +
+    scale_color_manual(values = cols) +
     theme_bw(base_size = 20) +
     theme(legend.title = element_blank()) +
     scale_x_continuous(breaks = c(1,10,20), limits = c(1,20)) +
