@@ -29,3 +29,14 @@ rule plot_cluster_upset:
         os.path.join(cluster_plots, "clusters.overlap.upset.png")
     script:
         "../scripts/cluster_upset.R"
+
+rule plot_clusters_heatmap:
+    input:
+        outcount = os.path.join(cluster_dir, "clusters.counts.tsv"),
+        final = os.path.join(cluster_dir, "clusters.final.tsv")
+    output:
+        os.path.join(cluster_plots, "clusters.heatmap.zscore.png")
+    script:
+        "../scripts/plot_clusters_heatmap.R"
+
+
