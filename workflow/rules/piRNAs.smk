@@ -3,8 +3,8 @@ rule get_piRNAs:
         lambda wildcards: os.path.join(featureCount_dir, wildcards.sample + ".sorted.nh.bam.featureCounts.bam")
     output:
         os.path.join(pirna_dir, "{sample}.piRNAs.bam")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     script:
         "../scripts/get_piRNAs.py"
 
@@ -14,8 +14,8 @@ rule pingpong:
     output:
         os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"),
         os.path.join(pirna_dir, "{sample}.piRNAs.pairs.tsv"),
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     script:
         "../scripts/pingpong.py"
 
@@ -45,8 +45,8 @@ rule nt_bias_sense:
         lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bam")
     output:
         os.path.join(pirna_dir, "{sample}.piRNAs.sense.ntfreq.tsv")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     script:
         "../scripts/nucleotide_bias.py"
 
@@ -56,8 +56,8 @@ rule nt_bias_antisense:
         lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bam")
     output:
         os.path.join(pirna_dir, "{sample}.piRNAs.antisense.ntfreq.tsv")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     script:
         "../scripts/nucleotide_bias.py"
 
@@ -89,8 +89,8 @@ rule length_distribution_piRNAs:
         os.path.join(pirna_dir, "{sample}.piRNAs.lengths.tsv")
     params:
         os.path.join(map_out_dir, "{sample}.sorted.counts.tsv")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     log:
         os.path.join(pirna_dir, "log", "{sample}.length_distribution_piRNAs.log")
     script:

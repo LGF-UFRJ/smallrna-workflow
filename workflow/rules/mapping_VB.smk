@@ -46,8 +46,8 @@ rule get_uniquely_vb:
         os.path.join(map_out_vb_dir, "{sample}.sorted.uniquely.bam")
     log:
         os.path.join(map_out_vb_dir, "log", "{sample}.get_uniquely.log")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     script:
         "../scripts/separate_uniquely.py"
 
@@ -68,8 +68,8 @@ rule count_mapped_vb:
         lambda wildcards: os.path.join(map_out_vb_dir, wildcards.sample + ".sorted.bam")
     output:
         os.path.join(map_out_vb_dir, "{sample}.sorted.counts.tsv")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     log:
         os.path.join(map_out_vb_dir, "log", "{sample}.count.log")
     script:

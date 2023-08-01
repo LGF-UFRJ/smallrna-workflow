@@ -90,12 +90,9 @@ rule bedToBigBed:
 
 rule clusters_overlap:
     input:
-        expand(os.path.join(cluster_dir, "{sample}.clusters.nomir.bed"), sample = samplesheet["name"])
-    params:
-        os.path.join(cluster_dir, "clusters.bed")
+        clusters = os.path.join(cluster_dir, "clusters.bed"),
+        files = expand(os.path.join(cluster_dir, "{sample}.clusters.nomir.bed"), sample = samplesheet["name"])
     output:
         os.path.join(cluster_dir, "clusters.overlap.tsv")
     shell:
-        "name_fmt=$(realpath {input} | egrep -o '\w+[12]\.' | sed 's/\.//') && "
-        "echo chr start end $name_fmt | tr ' ' '\t' > {output} && "
-        "bedtools annotate -counts -i <(cat {params} | cut -f 1,2,3) -files {input} >> {output}"
+        "bash scripts/clusters_overlap.sh {input.clusters} {input.files} >> {output}"

@@ -7,7 +7,7 @@ rule get_miRNAs:
         os.path.join(mirna_dir, "{sample}.miRNAs.bam")
     log:
         os.path.join(map_out_vb_dir, "log", "{sample}.index_uniquely.log")
-    conda:
-        "../envs/pysam0.yaml"
+    #conda:
+        #"../envs/pysam0.yaml"
     script:
         "../scripts/get_miRNAs.py"

@@ -1,8 +1,10 @@
+
+
 rule fastq_files:
     input:
         config["samplesheet"]
     output:
-        expand(os.path.join(fastq_dir, "{sample}.fastq.gz"), sample = samplesheet["name"])
+        os.path.join(fastq_dir, "lock.txt")
     params:
         fastq_dir
     log:

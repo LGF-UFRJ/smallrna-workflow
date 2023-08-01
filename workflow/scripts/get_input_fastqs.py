@@ -5,6 +5,7 @@ import os.path
 pd.set_option('display.max_colwidth', None)
 samplesheet = pd.read_csv(snakemake.input[0], sep="\t")
 outdir = snakemake.params[0]
+lock = snakemake.output[-1]
 sp.run(f"mkdir -p {outdir}", shell=True)
 
 for name in samplesheet["name"]:
@@ -15,3 +16,4 @@ for name in samplesheet["name"]:
     print(command)
     print(run.stdout)
     print(run.stderr)
+    sp.run("echo locked >> {lock}", shell=True)

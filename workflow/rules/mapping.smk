@@ -37,8 +37,6 @@ rule get_uniquely_hic:
         os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam")
     log:
         os.path.join(map_out_dir, "log", "{sample}.get_uniquely.log")
-    conda:
-        "../envs/pysam0.yaml"
     script:
         "../scripts/separate_uniquely.py"
 
@@ -59,8 +57,6 @@ rule count_mapped_hic:
         lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.bam")
     output:
         os.path.join(map_out_dir, "{sample}.sorted.counts.tsv")
-    conda:
-        "../envs/pysam0.yaml"
     log:
         os.path.join(map_out_dir, "log", "{sample}.count.log")
     script:
@@ -73,8 +69,6 @@ rule length_distribution_hic:
         os.path.join(map_out_dir, "{sample}.sorted.lengths.tsv")
     params:
         os.path.join(map_out_dir, "{sample}.sorted.counts.tsv")
-    conda:
-        "../envs/pysam0.yaml"
     log:
         os.path.join(map_out_dir, "log", "{sample}.lengths.log")
     script:
