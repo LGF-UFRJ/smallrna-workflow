@@ -42,8 +42,8 @@ rule get_pos_neg_piRNAs:
     log:
         os.path.join(cluster_pirna_dir, "log", "{sample}.clusters.multiBamSummary.log")
     shell:
-        "samtools view -b -f 16 {input.bam} > {output.pos} && "
-        "samtools view -b -F 16 {input.bam} > {output.neg} && "
+        "samtools view -b -F 16 {input.bam} > {output.pos} && "
+        "samtools view -b -f 16 {input.bam} > {output.neg} && "
         "samtools index {output.pos} && " 
         "samtools index {output.neg}"
 

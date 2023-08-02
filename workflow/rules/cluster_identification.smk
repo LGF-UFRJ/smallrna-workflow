@@ -42,9 +42,19 @@ rule windows_multiBamSummary:
     shell:
         "multiBamSummary bins -bs 1000 -p {threads} --outRawCounts {output.outcount} --bamfiles {input} -o {output.summary}"
 
+rule normalize_windows:
+    input:
+        windows = os.path.join(cluster_dir, "windows.counts.tsv"),
+        count_files = expand(os.path.join(map_out_dir, "{sample}.sorted.counts.tsv"), sample = samplesheet["name"])
+    output:
+        os.path.join(cluster_dir, "windows.norm.tsv")
+    shell:
+      "python3 scripts/windows_norm.py -w {input.windows} -c {input.count_files} -o {output}"
+
+
 rule extract_clusters:
     input:
-        os.path.join(cluster_dir, "windows.counts.tsv")
+        os.path.join(cluster_dir, "windows.norm.tsv")
     params:
         cluster_dir
     output:
