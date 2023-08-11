@@ -76,7 +76,7 @@ final = table.merge(table_pos_neg[["chr", "start", "end", "type"]],
                     how="left", 
                     on = ["chr", "start", "end"])
 # final["factor"] = final["mean_rpm"] * final["length"] 
-final = final.sort_values(by = ["mean_rpm"], ascending=False)
+final = final.sort_values(by = ["length"], ascending=False)
 names = ["RPCL"+str(i+1) for i in range(len(final))]
 final.insert(5, "name", names)
 final = final[["chr", "start", "end", "length", "name", "mean_rpm", "type"]]

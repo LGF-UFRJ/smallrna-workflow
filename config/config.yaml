@@ -1,27 +1,27 @@
-results: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/results/"
+results: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/results/"
 
-samplesheet: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/config/samplesheet.tsv"
+samplesheet: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/config/samplesheet.tsv"
 
-genome: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta"
-genome_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta.fai"
-genome_vb_transfered: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/annotation/VectorBase-51_RprolixusCDC_AnnotatedTranscripts.minimap2.sorted.bedSort.bb"
+genome: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta"
+genome_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/genome/Rhodnius_prolixus-3.0.3_HiC.fasta.fai"
+genome_vb_transfered: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/annotation/VectorBase-51_RprolixusCDC_AnnotatedTranscripts.minimap2.sorted.bedSort.bb"
 
-genome_vb: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/VectorBase-61_RprolixusCDC_Genome.fasta"
-genome_vb_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/VectorBase-61_RprolixusCDC_Genome.fasta.fai"
+genome_vb: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/genome/VectorBase-61_RprolixusCDC_Genome.fasta"
+genome_vb_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/genome/VectorBase-61_RprolixusCDC_Genome.fasta.fai"
 
-genome_virus: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/viruses.fa"
-genome_virus_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/genome/viruses.fa.fai"
+genome_virus: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/genome/viruses.fa"
+genome_virus_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/genome/viruses.fa.fai"
 
-bowtie_vb_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_vb/rhodnius_vb"
-bowtie_hic_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_hic/rhodnius_hic"
-bowtie_virus_index: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_viruses/rhodnius_viruses"
+bowtie_vb_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_vb/rhodnius_vb"
+bowtie_hic_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_hic/rhodnius_hic"
+bowtie_virus_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/bowtie_indexes/rhodnius_viruses/rhodnius_viruses"
 
-annotations: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/annotation/VectorBase-61_RprolixusCDC.gff"
-repeat_annotation: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/repeats/VectorBase-51_RprolixusCDC_Genome.fasta.out.gtf"
+annotations: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/annotation/VectorBase-61_RprolixusCDC.gff"
+repeat_annotation: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/repeats/VectorBase-51_RprolixusCDC_Genome.fasta.out.gtf"
 
-repeat_masker_out: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/repeats/Rhodnius_prolixus-3.0.3_HiC.fasta.out"
+repeat_masker_out: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/repeats/Rhodnius_prolixus-3.0.3_HiC.fasta.out"
 
-related_mirs: "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/resources/drosophila_miRNAs/dm3_mature.fmt.fa"
+related_mirs: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/drosophila_miRNAs/dm3_mature.fmt.fa"
 
 
 

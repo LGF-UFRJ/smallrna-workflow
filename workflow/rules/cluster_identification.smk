@@ -67,8 +67,10 @@ rule vb_bigBedToBed:
         config["genome_vb_transfered"],
     output:
         os.path.join(cluster_dir, "VB_transfered_annotation.bed")
+    conda:
+        "../envs/ucsc_tools.yaml"
     shell:
-        "bigBedToBed {input} {output}"
+        "/home5/attilio/programs/ucsc_tools/bigBedToBed {input} {output}"
 
 rule get_miRNAs_ids:
     input:

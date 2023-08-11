@@ -99,6 +99,7 @@ rule all:
         # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.bam"), sample = samplesheet["name"]),
         # os.path.join(cluster_dir, "clusters.final.tsv"),
         os.path.join(cluster_dir, "clusters.bb"),
+
         os.path.join(cluster_plots, "clusters.karyoplot.png"),
         os.path.join(cluster_plots, "clusters.sizes.png"),
         os.path.join(cluster_plots, "clusters.overlap.upset.png"),

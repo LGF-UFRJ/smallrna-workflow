@@ -7,7 +7,7 @@ clusters = snakemake.input
 output = snakemake.output
 
 for out in output:
-    stage = os.path.basename(out.replace(".clusters.bed", ""))
+    stage = os.path.basename(out.replace(".clusters.nomir.bed", ""))
     pat1 = re.compile(fr"{stage}1")
     pat2 = re.compile(fr"{stage}2")
     cl1 = [i for i in clusters if pat1.search(i)][0]

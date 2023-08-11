@@ -1,0 +1,28 @@
+name: ucsc_tools
+channels:
+  - iuc
+  - conda-forge
+  - bioconda
+  - defaults
+  - r
+dependencies:
+  - _libgcc_mutex=0.1=conda_forge
+  - _openmp_mutex=4.5=2_gnu
+  - ca-certificates=2023.7.22=hbcca054_0
+  - libgcc-ng=13.1.0=he5830b7_0
+  - libgomp=13.1.0=he5830b7_0
+  - libpng=1.6.39=h5eee18b_0
+  - libstdcxx-ng=13.1.0=hfd8a6a1_0
+  - libuuid=2.38.1=h0b41bf4_0
+  - mysql-connector-c=6.1.11=h24aacaa_2
+  - openssl=1.1.1v=h7f8727e_0
+  - ucsc-bedgraphtobigwig=357=h446ed27_4
+  - ucsc-bedtobigbed=357=h446ed27_4
+  - ucsc-fatotwobit=357=h446ed27_4
+  - ucsc-liftover=357=h446ed27_4
+  - ucsc-nibfrag=357=h446ed27_4
+  - ucsc-twobittofa=357=h446ed27_4
+  - ucsc-wigtobigwig=357=h446ed27_4
+  - ucsc_tools=357=0
+  - zlib=1.2.13=h5eee18b_0
+prefix: /home5/attilio/programs/miniconda3/envs/ucsc_tools

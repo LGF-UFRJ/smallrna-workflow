@@ -3,10 +3,11 @@ cluster_plots = os.path.join(cluster_dir, "plots")
 
 rule plot_ideograms:
     input:
-        pvs = "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/sandbox/pirnas/pvs.clusters.bed",
-        egg = "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/sandbox/pirnas/egg.clusters.bed",
-        emb = "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/sandbox/pirnas/emb.clusters.bed",
-        nym = "/data/iovino/group2/brito/analyses/smallrna_rhodnius_2023/sandbox/pirnas/nym.clusters.bed"
+        clusters = os.path.join(cluster_dir, "clusters.bb"),
+        pvs = os.path.join(cluster_dir, "pvs.clusters.nomir.bed"),
+        egg = os.path.join(cluster_dir, "egg.clusters.nomir.bed"),
+        emb = os.path.join(cluster_dir, "emb.clusters.nomir.bed"),
+        nym = os.path.join(cluster_dir, "nym.clusters.nomir.bed")
     output:
         os.path.join(cluster_plots, "clusters.karyoplot.png")
     params:

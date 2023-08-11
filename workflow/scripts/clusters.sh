@@ -6,7 +6,7 @@ NF=$(head -n 1 $1 | awk '{print NF-1}')
 header=($(head -n 1 $1 | sed "s/'//g"))
 outdir=$2
 threshold=1
-distance=5000
+distance=20000
 
 for i in $(seq 3 $NF)
 do
