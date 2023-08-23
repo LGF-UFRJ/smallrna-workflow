@@ -36,7 +36,7 @@ for c in counts:
 bed = ["chr", "start", "end"]
 for colname in table.columns:
     if colname not in bed:
-        sample = colname.replace(".sorted.bam", "")
+        sample = colname.replace(".sorted.uniquely.bam", "")
         total = total_dict[sample]
         norm_list = [normalize(i, total) for i in table[colname]]
         table[colname] = norm_list

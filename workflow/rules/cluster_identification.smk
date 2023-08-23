@@ -4,32 +4,60 @@ cluster_pirna_dir = os.path.join(cluster_dir, "piRNAs")
 
 localrules: get_uniquely_piRNAs
 
-rule get_piRNA_ids:
-    input:
-        lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.bam"),
+rule get_TEs_bed:
+    input: 
+        config["repeats_hic"]
     output:
-        os.path.join(cluster_pirna_dir, "{sample}.uniquely.ids.txt")
-    log:
-        os.path.join(cluster_pirna_dir, "log", "{sample}.get_piRNA_ids.log")
+        os.path.join(cluster_pirna_dir, "TE_annotation.bed")
     shell:
-        "bash scripts/get_unique_ids.sh {input} {output}"
- 
+        "bash scripts/get_TE_bed.sh {input} > {output}"
+
 rule get_uniquely_piRNAs:
-    input:
-        bam = lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.bam"),
-        ids = lambda wildcards: os.path.join(cluster_pirna_dir, wildcards.sample + ".uniquely.ids.txt")
-    params:
-        sam = lambda wildcards: os.path.join(cluster_pirna_dir, wildcards.sample + ".piRNAs.sam"),
-    output:
-        os.path.join(cluster_pirna_dir, "{sample}.piRNAs.uniquely.bam"),
-    log:
-        os.path.join(cluster_pirna_dir, "log", "{sample}.get_uniquely_piRNAs.log")
+    input: 
+        bam = lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.uniquely.bam"),
+        tes = os.path.join(cluster_pirna_dir, "TE_annotation.bed")
+    output: 
+        os.path.join(cluster_pirna_dir, "{sample}.piRNAs.uniquely.bam")
     shell:
-        "samtools view -H {input.bam} > {params.sam} && "
-        "samtools view {input.bam} | grep -Ff {input.ids} >> {params.sam} && "
-        "samtools view -Sb {input.bam} > {output} && "
-        "samtools index {output} && "
-        "rm {params.sam}"
+        "bash scripts/get_hic_piRNAs.sh {input.bam} {input.tes} {output}"
+
+# rule get_piRNA_ids:
+#     input:
+#         lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.bam"),
+#     output:
+#         os.path.join(cluster_pirna_dir, "{sample}.uniquely.ids.txt")
+#     log:
+#         os.path.join(cluster_pirna_dir, "log", "{sample}.get_piRNA_ids.log")
+#     shell:
+#         "bash scripts/get_unique_ids.sh {input} {output}"
+
+rule get_sliding_window:
+    input:
+        config["genome_index"]
+    output:
+        os.path.join(cluster_dir, "windows.bed")
+    shell:
+        "bedtools makewindows -w 5000 -s 1000 -g {input} > {output}"
+
+
+# rule get_uniquely_piRNAs:
+#     input:
+#         bam = lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.bam"),
+#         ids = lambda wildcards: os.path.join(cluster_pirna_dir, wildcards.sample + ".uniquely.ids.txt")
+#     params:
+#         sam = lambda wildcards: os.path.join(cluster_pirna_dir, wildcards.sample + ".piRNAs.sam"),
+#     output:
+#         os.path.join(cluster_pirna_dir, "{sample}.piRNAs.uniquely.bam"),
+#     log:
+#         os.path.join(cluster_pirna_dir, "log", "{sample}.get_uniquely_piRNAs.log")
+#     shell:
+#         "samtools view -H {input.bam} > {params.sam} && "
+#         "samtools view {input.bam} | grep -Ff {input.ids} >> {params.sam} && "
+#         "samtools view -Sb {input.bam} > {output} && "
+#         "samtools index {output} && "
+#         "rm {params.sam}"
+
+
 
 rule windows_multiBamSummary:   
     input:
@@ -52,15 +80,28 @@ rule normalize_windows:
       "python3 scripts/windows_norm.py -w {input.windows} -c {input.count_files} -o {output}"
 
 
+
 rule extract_clusters:
     input:
-        os.path.join(cluster_dir, "windows.norm.tsv")
-    params:
-        cluster_dir
+        bam = lambda wildcards: os.path.join(cluster_pirna_dir, wildcards.sample + ".piRNAs.uniquely.bam"),
+        windows = os.path.join(cluster_dir, "windows.bed")
     output:
-        expand(os.path.join(cluster_dir, "{sample}.clusters.bed"), sample = samplesheet["name"])
+        os.path.join(cluster_dir, "{sample}.clusters.bed"), 
+        os.path.join(cluster_dir, "{sample}.window_count.tsv"), 
+        os.path.join(cluster_dir, "{sample}.merged.bed"), 
     shell:
-        "bash scripts/clusters.sh {input} {params}"
+        "bash scripts/find_clusters.sh {input.bam} {input.windows}"
+
+
+# rule extract_clusters:
+#     input:
+#         os.path.join(cluster_dir, "windows.norm.tsv")
+#     params:
+#         cluster_dir
+#     output:
+#         expand(os.path.join(cluster_dir, "{sample}.clusters.bed"), sample = samplesheet["name"])
+#     shell:
+#         "bash scripts/clusters.sh {input} {params}"
 
 rule vb_bigBedToBed:
     input:

@@ -1,4 +1,4 @@
-
+te_dir = os.path.join(cluster_dir, "TEs/")
 
 rule merge_clusters:
     input:
@@ -18,7 +18,7 @@ rule merge_stage_clusters:
 
 rule clusters_total:   
     input:
-        bamfiles = expand(os.path.join(map_out_dir, "{sample}.sorted.bam"), sample = samplesheet["name"]),
+        bamfiles = expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
         clusters = os.path.join(cluster_dir, "clusters.bed")
     output:
         summary = os.path.join(cluster_dir, "clusters.total.results.npz"),
@@ -29,6 +29,21 @@ rule clusters_total:
         os.path.join(cluster_dir, "log", "clusters.multiBamSummary.log")
     shell:
         "multiBamSummary BED-file --BED {input.clusters} -p {threads} --outRawCounts {output.outcount} --scalingFactors {output.sfactors} --bamfiles {input.bamfiles} -o {output.summary}"
+
+# rule clusters_uniquely:   
+#     input:
+#         bamfiles = expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bam"), sample = samplesheet["name"]),
+#         clusters = os.path.join(cluster_dir, "clusters.bed")
+#     output:
+#         summary = os.path.join(cluster_dir, "clusters.total.results.npz"),
+#         sfactors = os.path.join(cluster_dir, "clusters.total.scallingFactors.tsv"),
+#         outcount = os.path.join(cluster_dir, "clusters.counts.tsv"),
+#     threads: 6
+#     log:
+#         os.path.join(cluster_dir, "log", "clusters.multiBamSummary.log")
+#     shell:
+#         "multiBamSummary BED-file --BED {input.clusters} -p {threads} --outRawCounts {output.outcount} --scalingFactors {output.sfactors} --bamfiles {input.bamfiles} -o {output.summary}"
+
 
 rule get_pos_neg_piRNAs:   
     input:
@@ -96,3 +111,46 @@ rule clusters_overlap:
         os.path.join(cluster_dir, "clusters.overlap.tsv")
     shell:
         "bash scripts/clusters_overlap.sh {input.clusters} {input.files} >> {output}"
+
+rule overlap_TE_top_clusters:
+    input:
+        clusters = os.path.join(cluster_dir, "top10_clusters.bed"),
+        tes = os.path.join(cluster_pirna_dir, "TE_annotation.bed")
+    output:
+        os.path.join(te_dir, "top10_clusters.te.overlap.bed")
+    shell:
+        "bedtools intersect -wo -a {input.top_cl} -b {input.tes} > {output}"
+
+rule clusters_top10_bed:
+    input:
+        os.path.join(cluster_dir, "clusters.final.tsv"),
+    output:
+        os.path.join(cluster_dir, "top10_clusters.bed")
+    shell:
+        "bash scripts/get_top10_clusters.sh {input} {output}"
+
+rule overlap_TE_top_clusters:
+    input:
+        top_cl = os.path.join(cluster_dir, "top10_clusters.bed"),
+        tes = os.path.join(cluster_pirna_dir, "TE_annotation.bed")
+    output:
+        os.path.join(te_dir, "top10_clusters.te.overlap.bed")
+    shell:
+        "bedtools intersect -wo -a {input.top_cl} -b {input.tes} > {output}"
+
+rule cluster_TE_count:
+    input:
+        os.path.join(te_dir, "top10_clusters.te.overlap.bed")
+    params:
+        te_dir
+    output:
+        [os.path.join(te_dir, f"RPCL{i}.TEs.count.tsv") for i in range(1,11)]
+    shell:
+        "bash scripts/get_count_per_cluster.sh {input} {params}"
+
+
+
+    
+
+    
+   

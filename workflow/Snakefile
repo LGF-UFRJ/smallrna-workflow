@@ -75,6 +75,7 @@ rule all:
 
         # Coverages
         # os.path.join(bamcoverage_dir, "effective_genome_size.txt"),
+        os.path.join(bamcoverage_dir, "scallingFactors.tsv"),
         expand(os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.bw"), sample = samplesheet["name"]),
         expand(os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.pos.bw"), sample = samplesheet["name"]),
         expand(os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.neg.bw"), sample = samplesheet["name"]),
@@ -89,20 +90,13 @@ rule all:
         os.path.join(featureCount_dir, "libraries_profile.plot.png"),
 
         # Cluster identification
-        # os.path.join(cluster_dir, "genome.1kb.bed"),
-        # expand(os.path.join(cluster_dir, "{sample}.clusters.bed"), sample = samplesheet["name"]),
-        # expand(os.path.join(cluster_dir, "{stage}.clusters.bed"), stage = stages),
-        # os.path.join(cluster_dir, "clusters.bed"),
-        # os.path.join(cluster_dir, "clusters.counts.tsv"),
-        # expand(os.path.join(cluster_dir, "clusters.pos.counts.tsv")),
-        # expand(os.path.join(pirna_dir, "{sample}.uniquely.ids.txt"), sample = samplesheet["name"]),
-        # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.bam"), sample = samplesheet["name"]),
-        # os.path.join(cluster_dir, "clusters.final.tsv"),
+        expand(os.path.join(cluster_dir, "{sample}.clusters.bed"), sample = samplesheet["name"]),
         os.path.join(cluster_dir, "clusters.bb"),
 
         os.path.join(cluster_plots, "clusters.karyoplot.png"),
         os.path.join(cluster_plots, "clusters.sizes.png"),
-        os.path.join(cluster_plots, "clusters.overlap.upset.png"),
+        #os.path.join(cluster_plots, "clusters.overlap.upset.png"),
+        [os.path.join(te_dir, f"RPCL{i}.TEs.count.tsv") for i in range(1,11)],
         # os.path.join(cluster_dir, "clusters.overlap.tsv"),
         # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.pos.bam"), sample = samplesheet["name"]),
 

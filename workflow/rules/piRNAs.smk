@@ -107,4 +107,19 @@ rule plot_length_distribution_piRNA:
     script:
         "../scripts/plot_length_distribution.R"
 
+rule TE_piRNA_quantification:
+    input:
+        repeat_saf = os.path.join(featureCount_dir, "annotations", "repeats.saf"),
+        bam = expand(os.path.join(map_out_vb_dir, "{sample}.sorted.nh.bam"), sample = samplesheet["name"])
+    output:
+        counts = os.path.join(featureCount_dir, "featureCounts.counts.tsv"),
+        outbam = expand(os.path.join(featureCount_dir, "{sample}.sorted.nh.bam.featureCounts.bam"), sample = samplesheet["name"])
+    log:
+        os.path.join(featureCount_dir, "log", "featureCounts.log")
+    threads: 6
+    params:
+        " -F SAF -M -O -R BAM --fraction"
+    shell:
+        "featureCounts {params} -T {threads} -a {input.saf} -o {output.counts} {input.bam}"
+
 
