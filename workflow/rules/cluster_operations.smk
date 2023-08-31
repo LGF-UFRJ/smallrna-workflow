@@ -93,6 +93,14 @@ rule clusters_info:
     script:
         "../scripts/clusters_rpm.py"
 
+rule final_to_bed:
+    input:
+        os.path.join(cluster_dir, "clusters.final.tsv")
+    output:
+        os.path.join(cluster_dir, "clusters.final.bed")
+    shell:
+        "bash scripts/cluster_fmt_final.sh {input} > {output}"
+
 rule bedToBigBed:
     input:
         clusters = os.path.join(cluster_dir, "clusters.final.tsv"),
@@ -112,14 +120,14 @@ rule clusters_overlap:
     shell:
         "bash scripts/clusters_overlap.sh {input.clusters} {input.files} >> {output}"
 
-rule overlap_TE_top_clusters:
-    input:
-        clusters = os.path.join(cluster_dir, "top10_clusters.bed"),
-        tes = os.path.join(cluster_pirna_dir, "TE_annotation.bed")
-    output:
-        os.path.join(te_dir, "top10_clusters.te.overlap.bed")
-    shell:
-        "bedtools intersect -wo -a {input.top_cl} -b {input.tes} > {output}"
+#rule overlap_TE_top_clusters:
+    #input:
+        #clusters = os.path.join(cluster_dir, "top10_clusters.bed"),
+        #tes = os.path.join(cluster_pirna_dir, "TE_annotation.bed")
+    #output:
+        #os.path.join(te_dir, "top10_clusters.te.overlap.bed")
+    #shell:
+        #"bedtools intersect -wo -a {input.top_cl} -b {input.tes} > {output}"
 
 rule clusters_top10_bed:
     input:
@@ -147,6 +155,15 @@ rule cluster_TE_count:
         [os.path.join(te_dir, f"RPCL{i}.TEs.count.tsv") for i in range(1,11)]
     shell:
         "bash scripts/get_count_per_cluster.sh {input} {params}"
+
+rule clusters_TE_strand_count:
+    input:
+        sortedcl = os.path.join(cluster_dir, "clusters.sorted.bed"),
+        tes = os.path.join(cluster_pirna_dir, "TE_annotation.bed")
+    output:
+        os.path.join(cluster_dir, "clusters.te.strand.count.tsv"),
+    shell:
+        "bash scripts/clusters_TE_strand_count.sh {input.tes} {input.sortedcl} > {output}"
 
 
 

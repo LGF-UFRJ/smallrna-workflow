@@ -4,5 +4,5 @@ set -euo pipefail
 
 read parameter <<< $@
 
-snakemake --cores 12 $parameter --reason --use-conda --latency-wait 60 --keep-going 
+nice -n 10 snakemake --cores 24 $parameter --reason --use-conda --latency-wait 60 --keep-going 
 

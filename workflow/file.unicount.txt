@@ -1,2 +1,0 @@
-../results/clusters/piRNAs/egg1.piRNAs.uniquely.bam
-../results/clusters/piRNAs/egg2.piRNAs.uniquely.bam

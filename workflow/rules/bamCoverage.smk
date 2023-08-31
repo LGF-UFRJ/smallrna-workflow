@@ -45,7 +45,7 @@ rule bamCoverage_uniquely_pos:
     output:
         os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.pos.bw")
     params:
-        main = f"-p 6 --effectiveGenomeSize $(cat {genome_size_file}) --filterRNAstrand reverse -bs 18",
+        main = f"-p 6 --effectiveGenomeSize $(cat {genome_size_file}) --samFlagExclude 16 -bs 18",
         sf = sfactors_file,
         sample_name = lambda wildcards: wildcards.sample
     log:
@@ -64,7 +64,7 @@ rule bamCoverage_uniquely_neg:
     output:
         os.path.join(bamcoverage_dir, "{sample}.sorted.uniquely.neg.bw")
     params:
-        main = f"-p 6 --effectiveGenomeSize $(cat {genome_size_file}) --filterRNAstrand forward -bs 18",
+        main = f"-p 6 --effectiveGenomeSize $(cat {genome_size_file}) --samFlagInclude 16 -bs 18",
         sf = sfactors_file,
         sample_name = lambda wildcards: wildcards.sample
     log:

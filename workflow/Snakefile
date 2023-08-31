@@ -99,6 +99,7 @@ rule all:
         [os.path.join(te_dir, f"RPCL{i}.TEs.count.tsv") for i in range(1,11)],
         # os.path.join(cluster_dir, "clusters.overlap.tsv"),
         # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.pos.bam"), sample = samplesheet["name"]),
+        os.path.join(cluster_dir, "clusters.te.strand.count.tsv"),
 
 
 
@@ -115,6 +116,14 @@ rule all:
         # expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.ntfreq.tsv"), sample = samplesheet["name"]),
         os.path.join(pirna_dir, "piRNAs.sense.ntfreq.plot.png"),
         os.path.join(pirna_dir, "piRNAs.antisense.ntfreq.plot.png"),
+        expand(os.path.join(pirna_dir, "{sample}.mapreadcount.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.te.piRNA.count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.bam"), sample = samplesheet["name"]),
+
+
 
         # miRNAs
         expand(os.path.join(mirna_dir, "{sample}.miRNAs.bam"), sample = samplesheet["name"]),
