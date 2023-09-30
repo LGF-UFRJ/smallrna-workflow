@@ -15,13 +15,16 @@ trim_outdir = os.path.join(config["results"],"trimming/")
 map_out_dir = os.path.join(config["results"], "mapping/")
 map_out_vb_dir = os.path.join(config["results"], "mapping_VB/")
 map_out_virus_dir = os.path.join(config["results"], "mapping_viruses/")
+map_ht_te_dir = os.path.join(config["results"], "mapping_ht_te/")
 deeptools_dir = os.path.join(config["results"], "deeptools/")
 multiqc_dir = os.path.join(config["results"], "multiQC/")
 featureCount_dir = os.path.join(config["results"], "featureCounts/")
-pirna_dir = os.path.join(config["results"], "piRNA_analysis/")
+# pirna_dir = os.path.join(config["results"], "piRNA_analysis/")
 mirdeep_dir = os.path.join(config["results"], "mirDeep/")
 cluster_dir = os.path.join(config["results"], "clusters/")
 pirna_dir = os.path.join(config["results"], "piRNAs/")
+sirna_dir = os.path.join(config["results"], "siRNAs/")
+vsiRNA_dir = os.path.join(config["results"], "vsiRNAs/")
 mirna_dir = os.path.join(config["results"], "miRNAs/")
 bamcoverage_dir = os.path.join(config["results"], "bamCoverage_dir/")
 
@@ -38,9 +41,12 @@ include: "rules/cluster_identification.smk"
 include: "rules/cluster_plots.smk"
 include: "rules/cluster_operations.smk"
 include: "rules/piRNAs.smk"
+include: "rules/siRNAs.smk"
 include: "rules/miRNAs.smk"
 include: "rules/bamCoverage.smk"
-# include: "rules/mapping_viruses.smk"
+include: "rules/mapping_viruses.smk"
+include: "rules/mapping_HT_TE.smk"
+include: "rules/viruses_vsiRNA.smk"
 
 # Execution --------------------------------------------------------------------
 rule all:
@@ -91,6 +97,7 @@ rule all:
 
         # Cluster identification
         expand(os.path.join(cluster_dir, "{sample}.clusters.bed"), sample = samplesheet["name"]),
+        os.path.join(cluster_dir, "clusters.fmt.bed"),
         os.path.join(cluster_dir, "clusters.bb"),
 
         os.path.join(cluster_plots, "clusters.karyoplot.png"),
@@ -100,6 +107,9 @@ rule all:
         # os.path.join(cluster_dir, "clusters.overlap.tsv"),
         # expand(os.path.join(cluster_dir, "{sample}.piRNAs.uniquely.pos.bam"), sample = samplesheet["name"]),
         os.path.join(cluster_dir, "clusters.te.strand.count.tsv"),
+        os.path.join(cluster_dir, "top10_clusters.cov.neg.tsv"),
+        os.path.join(cluster_dir, "top10_clusters.cov.pos.tsv"),
+
 
 
 
@@ -109,24 +119,106 @@ rule all:
         os.path.join(pirna_dir, "piRNAs.line.lengths.plot.png"),
         ## Pingpong signal
         # expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"]),
-        os.path.join(pirna_dir, "lines.piRNAs.pingpong.plot.png"),
+        #os.path.join(pirna_dir, "lines.piRNAs.pingpong.plot.png"),
         ## Nucleotide Bias
         # expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.bam"), sample = samplesheet["name"]),
         # expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.ntfreq.tsv"), sample = samplesheet["name"]),
         # expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.ntfreq.tsv"), sample = samplesheet["name"]),
         os.path.join(pirna_dir, "piRNAs.sense.ntfreq.plot.png"),
         os.path.join(pirna_dir, "piRNAs.antisense.ntfreq.plot.png"),
-        expand(os.path.join(pirna_dir, "{sample}.mapreadcount.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_vb_dir, "{sample}.mapreadcount.tsv"), sample = samplesheet["name"]),
         expand(os.path.join(pirna_dir, "{sample}.te.piRNA.count.tsv"), sample = samplesheet["name"]),
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.logo.png"), sample = samplesheet["name"]),
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.logo.png"), sample = samplesheet["name"]),
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.bam"), sample = samplesheet["name"]),
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.bam"), sample = samplesheet["name"]),
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.logo.png"), sample = samplesheet["name"]),
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.logo.png"), sample = samplesheet["name"]),
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.bam"), sample = samplesheet["name"]),
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.bam"), sample = samplesheet["name"]),
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.seqs.logo.png"), sample = samplesheet["name"]),
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.sense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.antisense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.gz"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.pairs.count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.sense.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.antisense.seqs.png"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(pirna_dir, "{sample}.piRNAs.lowcomp.ids.txt"), sample = samplesheet["name"]),
 
+        # siRNAs
+        os.path.join(sirna_dir, "siRNAs.line.lengths.plot.png"),
+        os.path.join(sirna_dir, "siRNAs.sense.ntfreq.plot.png"),
+        os.path.join(sirna_dir, "siRNAs.antisense.ntfreq.plot.png"),
+        expand(os.path.join(map_out_vb_dir, "{sample}.mapreadcount.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.te.siRNA.count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.sense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.antisense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.overlap.tsv.5p.gz"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.pairs.count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.overlap.tsv.5p.sense.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.overlap.tsv.5p.antisense.seqs.png"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.pingpong.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(sirna_dir, "{sample}.siRNAs.lowcomp.ids.txt"), sample = samplesheet["name"]),
+
+        # vsiRNAs
+        os.path.join(vsiRNA_dir, "vsiRNAs.line.lengths.plot.png"),
+        os.path.join(vsiRNA_dir, "vsiRNAs.sense.ntfreq.plot.png"),
+        os.path.join(vsiRNA_dir, "vsiRNAs.antisense.ntfreq.plot.png"),
+        # expand(os.path.join(map_out_vb_dir, "{sample}.mapreadcount.tsv"), sample = samplesheet["name"]),
+        # # expand(os.path.join(vsiRNA_dir, "{sample}.te.vsiRNA.count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.sense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.antisense.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.overlap.tsv.5p.gz"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.pairs.count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.overlap.tsv.5p.sense.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.overlap.tsv.5p.antisense.seqs.png"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.pingpong.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNAs.lowcomp.ids.txt"), sample = samplesheet["name"]),
+        expand(os.path.join(vsiRNA_dir, "{sample}.vsiRNA-count.tsv"), sample = samplesheet["name"]),
 
 
         # miRNAs
         expand(os.path.join(mirna_dir, "{sample}.miRNAs.bam"), sample = samplesheet["name"]),
+
+        # Viruses
+        expand(os.path.join(map_out_virus_dir, "{sample}.viruses.sorted.bam"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_virus_dir, "ridges.lengths.plot.png"), sample = samplesheet["name"]),
+        #expand(os.path.join(map_out_virus_dir, "{sample}.sorted.fq"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_virus_dir, "{sample}.genomecov.rpm.neg.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_virus_dir, "{sample}.genomecov.rpm.pos.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_virus_dir, "all.viruses.pingpong.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_virus_dir, "all.viruses.overlap.tsv.5p.sense.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(map_out_virus_dir, "{sample}.viruses.sorted.lendist.each.tsv"), sample = samplesheet["name"]),
+
+        
+        
+        # Mapping to HT TE in gilbert et al 2010
+        expand(os.path.join(map_ht_te_dir, "{sample}.ht-te.sorted.bam"), sample = samplesheet["name"]),
+        os.path.join(map_ht_te_dir, "ridges.lengths.plot.png"),
+        # expand(os.path.join(map_ht_te_dir, "{sample}.piRNAs.overlap.tsv.5p.sense.seqs.logo.png"), sample = samplesheet["name"]),
+        expand(os.path.join(map_ht_te_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_ht_te_dir, "{sample}.te-count.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_ht_te_dir, "{sample}.genomecov.rpm.neg.tsv"), sample = samplesheet["name"]),
+        expand(os.path.join(map_ht_te_dir, "{sample}.genomecov.rpm.pos.tsv"), sample = samplesheet["name"]),
+        os.path.join(map_ht_te_dir, "all.piRNAs.overlap.tsv.5p.sense.seqs.logo.png"),
+        os.path.join(map_ht_te_dir, "all.piRNAs.pingpong.tsv"),
+        expand(os.path.join(split_dir, "{sample}.ht-te.sorted.{tes}.bam"), sample = samplesheet["name"], tes = tes),
+
+
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.sense.bam"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.sense.bed"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.antisense.bed"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.overlap.tsv.gz"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.overlap.tsv.5p.gz"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.overlap.tsv.5p.sense.bed"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.overlap.tsv.5p.antisense.bed"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.overlap.tsv.5p.sense.fa"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "{sample}.{tes}.piRNAs.overlap.tsv.5p.sense.seqs.txt"), sample = samplesheet["name"], tes = tes),
+        expand(os.path.join(split_dir, "all.{tes}.sense.seqs.txt"), tes = tes),
+        expand(os.path.join(split_dir, "all.{tes}.piRNAs.overlap.tsv.5p.sense.seqs.logo.png"), tes = tes),
+        expand(os.path.join(split_dir, "all.{tes}.piRNAs.overlap.tsv.gz"), tes = tes),
+        expand(os.path.join(split_dir, "all.{tes}.piRNAs.pingpong.tsv"), tes = tes),
+        os.path.join(map_ht_te_dir, "all.ht_te.clusters.tsv"),
+
+
 
 
 

@@ -6,7 +6,7 @@ bamfile = snakemake.input[0]
 outfile = snakemake.output[0]
 
 repeat_pattern = re.compile(r"::")
-nonrepeat_pattern = re.compile(r"rRNA|snRNA")
+nonrepeat_pattern = re.compile(r"Simple_repeat|rRNA|snRNA|Low_complexity")
 
 bam = pysam.AlignmentFile(bamfile, "rb")
 outbam = pysam.AlignmentFile(outfile, "w", template=bam)

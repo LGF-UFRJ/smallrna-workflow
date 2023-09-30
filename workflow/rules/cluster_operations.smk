@@ -165,9 +165,44 @@ rule clusters_TE_strand_count:
     shell:
         "bash scripts/clusters_TE_strand_count.sh {input.tes} {input.sortedcl} > {output}"
 
+rule bam_to_bed_uniquely:
+    input: 
+        lambda wildcards: os.path.join(map_out_dir, wildcards.sample + ".sorted.uniquely.bam")
+    output: 
+        os.path.join(map_out_dir, "{sample}.sorted.uniquely.bed")
+    shell: 
+        "bedtools bamtobed -i {input} > {output}"
 
+rule merge_uniquely_bed:
+    input: 
+        expand(os.path.join(map_out_dir, "{sample}.sorted.uniquely.bed"), sample = samplesheet["name"])
+    output: 
+        os.path.join(map_out_dir, "all.sorted.uniquely.bed")
+    shell: 
+        "cat {input} | bedtools sort > {output}"
 
-    
+rule top10_pos_coverage:
+    input: 
+        all_bed = os.path.join(map_out_dir, "all.sorted.uniquely.bed"),
+        top10 = os.path.join(cluster_dir, "top10_clusters.bed")
+    output: 
+        os.path.join(cluster_dir, "top10_clusters.cov.pos.tsv")
+    shell: 
+        "bedtools coverage -d -s -a <(sed 's/\./\+/' {input.top10}) -b {input.all_bed} > {output}"
 
-    
-   
+rule top10_neg_coverage:
+    input: 
+        all_bed = os.path.join(map_out_dir, "all.sorted.uniquely.bed"),
+        top10 = os.path.join(cluster_dir, "top10_clusters.bed")
+    output: 
+        os.path.join(cluster_dir, "top10_clusters.cov.neg.tsv")
+    shell: 
+        "bedtools coverage -d -S -a <(sed 's/\./\+/' {input.top10}) -b {input.all_bed} > {output}"
+
+rule format_bed:
+    input: 
+        os.path.join(cluster_dir, "clusters.final.tsv"),
+    output: 
+        os.path.join(cluster_dir, "clusters.fmt.bed"),
+    shell: 
+        "bash scripts/cl_cfmt.sh {input} > {output}"

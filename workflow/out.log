@@ -1,5 +1,0 @@
-pairs=/home5/attilio/Tarcisio/smallrna_rhodnius_2023/results/piRNAs/emb2.piRNAs.pairs.tsv
-sense=/home5/attilio/Tarcisio/smallrna_rhodnius_2023/results/piRNAs/emb2.piRNAs.sense.bam
-antisense=/home5/attilio/Tarcisio/smallrna_rhodnius_2023/results/piRNAs/emb2.piRNAs.antisense.bam
-out_sense=/home5/attilio/Tarcisio/smallrna_rhodnius_2023/results/piRNAs/emb2.piRNAs.sense.pairs.bam
-out_antisense=/home5/attilio/Tarcisio/smallrna_rhodnius_2023/results/piRNAs/emb2.piRNAs.antisense.pairs.bam

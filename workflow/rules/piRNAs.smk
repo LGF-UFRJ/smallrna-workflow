@@ -6,24 +6,6 @@ rule get_piRNAs:
     script:
         "../scripts/get_piRNAs.py"
 
-rule pingpong:
-    input:
-        lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.bam")
-    output:
-        os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"),
-        os.path.join(pirna_dir, "{sample}.piRNAs.pairs.tsv"),
-    script:
-        "../scripts/pingpong.py"
-
-rule plot_pingpong:
-    input:
-        expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"])
-    output:
-        os.path.join(pirna_dir, "ridges.piRNAs.pingpong.plot.png"),
-        os.path.join(pirna_dir, "lines.piRNAs.pingpong.plot.png"),
-    script:
-        "../scripts/plot_pingpong.R"
-
 rule sep_sense_antisense:
     input:
         pirnas = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.bam"),
@@ -35,49 +17,188 @@ rule sep_sense_antisense:
         "samtools view -b {input.pirnas} | bedtools intersect -s -abam stdin -b {input.gtf} > {output.sense} && "
         "samtools view -b {input.pirnas} | bedtools intersect -S -abam stdin -b {input.gtf} > {output.antisense}"
 
-rule split_piRNA_pairs:
+rule get_sense_fa:
     input:
-        pairs = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.pairs.tsv"),
         sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bam"),
         antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bam"),
     output:
-        sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.bam"),
-        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.bam"),
-    shell:
-        "bash scripts/split_piRNAs.sh {input.pairs} {input.sense} {input.antisense} {output.sense} {output.antisense} &> out.log"
-
-rule get_sense_fa:
-    input:
-        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.pairs.bam"),
-        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.pairs.bam"),
-    output:
-        sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.fa"),
-        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.fa"),
+        sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.fa"),
+        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.fa"),
     shell:
         "bash scripts/get_sense_fasta.sh {input.sense} > {output.sense} &&"
         "bash scripts/get_sense_fasta.sh {input.antisense} > {output.antisense}"
 
+rule bamtobed_sense:
+    input:
+        bam = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bam"),
+        #antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bam"),
+    output:
+        bed = os.path.join(pirna_dir, "{sample}.piRNAs.sense.bed"),
+        #antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.bed"),
+    shell:
+        "bedtools bamtobed -i {input.bam} > {output.bed}"
+
+rule bamtobed_antisense:
+    input:
+        #lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bam"),
+        bam = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bam"),
+    output:
+        bed = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.bed"),
+    shell:
+        "bedtools bamtobed -i {input.bam} > {output.bed}"
+
+rule count_overlaps:
+    input:
+        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bed"),
+        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bed"),
+    output:
+        os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.gz"),
+    shell:
+        "bedtools intersect -wo -S -a {input.sense} -b {input.antisense} | gzip - > {output}"
+
+
+rule filter_5p_overlap:
+    input:
+        os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.gz"),
+    output:
+        os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.gz"),
+    shell:
+        "bash scripts/get_5p_overlap.sh {input} > {output}"
+
+rule separate_5p_bed_sense:
+    input:
+        lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.gz"),
+    output:
+        sense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.sense.bed"),
+    shell:
+        "bash scripts/get_5p_bed.sh {input} sense > {output.sense}"
+
+rule separate_5p_bed_antisense:
+    input:
+        lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.gz"),
+    output:
+        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.antisense.bed"),
+    shell:
+        "bash scripts/get_5p_bed.sh {input} antisense > {output.antisense}"
+
+rule get_5p_fasta:
+    input:
+        genome = config["genome_vb"],
+        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.sense.bed"),
+        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.antisense.bed"),
+    output:
+        sense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.sense.fa"),
+        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.antisense.fa"),
+    shell:
+        "bedtools getfasta -s -name -fi {input.genome} -bed {input.sense} > {output.sense} && "
+        "bedtools getfasta -s -name -fi {input.genome} -bed {input.antisense} > {output.antisense}"
+
 rule get_seqs_logo:
     input:
-        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.pairs.fa"),
-        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.pairs.fa"),
+        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.sense.fa"),
+        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.antisense.fa"),
     output:
-        sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.txt"),
-        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.txt"),
+        sense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.sense.seqs.txt"),
+        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.antisense.seqs.txt"),
     shell:
         "bash scripts/get_seqs_for_logo.sh {input.sense} > {output.sense} &&"
         "bash scripts/get_seqs_for_logo.sh {input.antisense} > {output.antisense}"
 
 rule plot_seq_logo:
     input:
-        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.pairs.seqs.txt"),
-        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.pairs.seqs.txt"),
+        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.sense.seqs.txt"),
+        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.5p.antisense.seqs.txt"),
     output:
-        sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.logo.png"),
-        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.logo.png"),
+        sense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.sense.seqs.logo.png"),
+        antisense = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.antisense.seqs.png"),
     shell:
         "Rscript scripts/plot_seqlogo.R {input.sense} {output.sense} && "
         "Rscript scripts/plot_seqlogo.R {input.antisense} {output.antisense}"
+
+rule get_low_complexity:
+    input:
+        sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.fa"),
+        antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.fa"),
+    output:
+        os.path.join(pirna_dir, "{sample}.piRNAs.lowcomp.ids.txt")
+    shell:
+        "python3 scripts/get_lowcomplexity_ids.py {input.sense} {input.antisense} > {output}"
+
+rule pingpong_signal:
+    input:
+        lowcomp = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.lowcomp.ids.txt"),
+        mrc = lambda wildcards: os.path.join(map_out_vb_dir, wildcards.sample + ".mapreadcount.tsv"),
+        overlap = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.gz"),
+    output:
+        os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"),
+    shell:
+        "python3 scripts/pingpong_signal.py {input.lowcomp} {input.mrc} {input.overlap} > {output}"
+
+#rule pingpong_signal:
+    #input:
+        #mrc = lambda wildcards: os.path.join(map_out_vb_dir, wildcards.sample + ".mapreadcount.tsv"),
+        #overlap = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.overlap.tsv.gz"),
+    #output:
+        #os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"),
+    #shell:
+        #"bash scripts/pingpong_signal.sh {input.mrc} {input.overlap} > {output}"
+
+
+
+
+#rule pingpong:
+    #input:
+        #lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.bam"),
+        ##sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bam"),
+        ##antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bam"),
+    #output:
+        #os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"),
+        #os.path.join(pirna_dir, "{sample}.piRNAs.pairs.tsv"),
+    #script:
+        #"../scripts/pingpong.py"
+
+#rule plot_pingpong:
+    #input:
+        #expand(os.path.join(pirna_dir, "{sample}.piRNAs.pingpong.tsv"), sample = samplesheet["name"])
+    #output:
+        #os.path.join(pirna_dir, "ridges.piRNAs.pingpong.plot.png"),
+        #os.path.join(pirna_dir, "lines.piRNAs.pingpong.plot.png"),
+    #script:
+        #"../scripts/plot_pingpong.R"
+
+#rule split_piRNA_pairs:
+    #input:
+        #pairs = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.pairs.tsv"),
+        #sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.bam"),
+        #antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.bam"),
+    #output:
+        #sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.bam"),
+        #antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.bam"),
+    #shell:
+        #"bash scripts/split_piRNAs.sh {input.pairs} {input.sense} {input.antisense} {output.sense} {output.antisense} &> out.log"
+
+
+#rule get_seqs_logo:
+    #input:
+        #sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.pairs.fa"),
+        #antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.pairs.fa"),
+    #output:
+        #sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.txt"),
+        #antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.txt"),
+    #shell:
+        #"bash scripts/get_seqs_for_logo.sh {input.sense} > {output.sense} &&"
+        #"bash scripts/get_seqs_for_logo.sh {input.antisense} > {output.antisense}"
+
+#rule plot_seq_logo:
+    #input:
+        #sense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.sense.pairs.seqs.txt"),
+        #antisense = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.antisense.pairs.seqs.txt"),
+    #output:
+        #sense = os.path.join(pirna_dir, "{sample}.piRNAs.sense.pairs.seqs.logo.png"),
+        #antisense = os.path.join(pirna_dir, "{sample}.piRNAs.antisense.pairs.seqs.logo.png"),
+    #shell:
+        #"Rscript scripts/plot_seqlogo.R {input.sense} {output.sense} && "
+        #"Rscript scripts/plot_seqlogo.R {input.antisense} {output.antisense}"
 
 rule nt_bias_sense:
     input:
@@ -180,3 +301,11 @@ rule count_te_piRNAs:
     shell:
         "bash scripts/count_te.sh {input.mrc} {input.fc} > {output}"
 
+rule count_piRNAs_pairs:
+    input:
+        pirnas = lambda wildcards: os.path.join(pirna_dir, wildcards.sample + ".piRNAs.bam"),
+        pairs = os.path.join(pirna_dir, "{sample}.piRNAs.overlap.tsv.5p.gz"),
+    output:
+        os.path.join(pirna_dir, "{sample}.piRNAs.pairs.count.tsv"),
+    shell:
+        "bash scripts/get_pct_pairs.sh {input.pirnas} {input.pairs} > {output}"

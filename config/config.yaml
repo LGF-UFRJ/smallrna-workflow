@@ -25,4 +25,11 @@ repeats_hic: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/repeats/R
 related_mirs: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/drosophila_miRNAs/dm3_mature.fmt.fa"
 
 
+gilberts_HT_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/bowtie_indexes/gilberts_RP/gilberts_rp"
+gilberts_HT_fa: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/repeats/gilbert_et_al_2010_HT.RP.fa"
+gilberts_HT_gff: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/repeats/rp_ht_te.gff"
+
+# gilberts_HT_index: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/bowtie_indexes/gilberts_ET/ht-te"
+# gilberts_HT_fa: "/home5/attilio/Tarcisio/smallrna_rhodnius_2023/resources/repeats/gilbert_et_al_2010_HT.fmt.fa"
+
 
